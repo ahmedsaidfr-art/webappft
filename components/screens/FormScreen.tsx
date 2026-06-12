@@ -9,9 +9,10 @@ import { Seg } from '@/components/widgets/Seg';
 import { Chips } from '@/components/widgets/Chips';
 import { AmountCard } from '@/components/widgets/AmountCard';
 import { SearchSheet, type AddField } from '@/components/ui/SearchSheet';
+import { PdfPreviewSheet } from '@/components/ui/PdfPreviewSheet';
 import { Toast, type ToastData } from '@/components/ui/Toast';
 import { parseAmount, formatAmount } from '@/lib/format';
-import { generateFichePdfBlob, mergeWithDevis, downloadBlob } from '@/lib/pdf';
+import { generateFichePdfBlob, mergeWithDevis, downloadBlob, isValidPdf } from '@/lib/pdf';
 import { BUDGET_OPTIONS } from '@/lib/data';
 import { emptyFormData } from '@/lib/types';
 import type {
@@ -89,6 +90,7 @@ export function FormScreen({
   const [ctaState, setCtaState] = useState<'idle' | 'loading' | 'success'>('idle');
   const [devisFile, setDevisFile] = useState<File | null>(initialDevisFile);
   const devisInputRef = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<{ url: string; blob: Blob; filename: string } | null>(null);
 
   const today = new Date().toLocaleDateString('fr-FR');
 
@@ -168,14 +170,36 @@ export function FormScreen({
       const ficheBlob = await generateFichePdfBlob(form, today);
       const blob = await mergeWithDevis(ficheBlob, devisFile);
       const filename = `Fiche-travaux-${form.numDevis || 'sans-devis'}.pdf`;
-      downloadBlob(blob, filename);
-      setCtaState('success');
-      setToast({ msg: 'PDF généré avec succès !', type: 'success' });
-      setTimeout(() => setCtaState('idle'), 3000);
+      setPreview({ url: URL.createObjectURL(blob), blob, filename });
+      setCtaState('idle');
     } catch {
       setCtaState('idle');
       setToast({ msg: 'Erreur lors de la génération du PDF', type: 'error' });
     }
+  };
+
+  const closePreview = () => {
+    if (preview) URL.revokeObjectURL(preview.url);
+    setPreview(null);
+  };
+
+  const handleDownload = () => {
+    if (!preview) return;
+    downloadBlob(preview.blob, preview.filename);
+    setCtaState('success');
+    setToast({ msg: 'PDF téléchargé avec succès !', type: 'success' });
+    setTimeout(() => setCtaState('idle'), 3000);
+    closePreview();
+  };
+
+  const handleDevisFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file && !(await isValidPdf(file))) {
+      setToast({ msg: 'Le fichier sélectionné n\'est pas un PDF valide', type: 'error' });
+      if (devisInputRef.current) devisInputRef.current.value = '';
+      return;
+    }
+    setDevisFile(file);
   };
 
   const handleCTATap = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -465,7 +489,7 @@ export function FormScreen({
                 type="file"
                 accept="application/pdf"
                 style={{ display: 'none' }}
-                onChange={(e) => setDevisFile(e.target.files?.[0] || null)}
+                onChange={handleDevisFileChange}
               />
             </Field>
             <Field label="TVA" hint={form.batiment ? `Pré-rempli depuis le bâtiment ${form.batiment.numero} — modifiable` : null}>
@@ -568,13 +592,13 @@ export function FormScreen({
             >
               {ctaState === 'idle' && (
                 <>
-                  <Icon name="fileText" size={20} /> Générer &amp; Télécharger le PDF
+                  <Icon name="fileText" size={20} /> Générer &amp; Prévisualiser le PDF
                 </>
               )}
               {ctaState === 'loading' && <div className="cta__spinner" />}
               {ctaState === 'success' && (
                 <>
-                  <Icon name="checkCircle" size={20} /> PDF généré avec succès
+                  <Icon name="checkCircle" size={20} /> PDF téléchargé avec succès
                 </>
               )}
             </button>
@@ -734,6 +758,11 @@ export function FormScreen({
             </div>
           )}
         />
+      )}
+
+      {/* PDF Preview */}
+      {preview && (
+        <PdfPreviewSheet url={preview.url} filename={preview.filename} onDownload={handleDownload} onClose={closePreview} />
       )}
 
       {/* Toast */}

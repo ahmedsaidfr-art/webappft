@@ -446,6 +446,15 @@ export async function mergeWithDevis(ficheBlob: Blob, devisFile: File | null): P
   return new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' });
 }
 
+export async function isValidPdf(file: File): Promise<boolean> {
+  try {
+    await PDFDocument.load(await file.arrayBuffer());
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
