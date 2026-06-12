@@ -10,7 +10,7 @@ type Phase = 'idle' | 'scanning';
 const STEPS = ['Entreprise & N° devis', 'Montants HT / TTC / TVA', 'Bâtiment, étage & dates'];
 
 interface UploadScreenProps {
-  onComplete: (data: Partial<FormData>) => void;
+  onComplete: (data: Partial<FormData>, file: File) => void;
   onBack: () => void;
   batiments: Batiment[];
   entreprises: Entreprise[];
@@ -89,7 +89,7 @@ export function UploadScreen({ onComplete, onBack, batiments, entreprises, march
     }
 
     setTimeout(() => {
-      onComplete(buildFormPatch(extracted));
+      onComplete(buildFormPatch(extracted), file);
     }, 2500);
   };
 

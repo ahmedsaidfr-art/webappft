@@ -1,4 +1,5 @@
 import { Document, Page, Text, View, Image, StyleSheet, pdf } from '@react-pdf/renderer';
+import { PDFDocument } from 'pdf-lib';
 import type { FormData } from './types';
 
 const BORDER = '1pt solid #000000';
@@ -115,8 +116,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkboxMark: {
-    fontSize: 7,
+    fontSize: 6,
     fontFamily: 'Helvetica-Bold',
+    lineHeight: 1,
   },
   checkboxLabel: {
     fontSize: 7.5,
@@ -425,6 +427,23 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
 
 export async function generateFichePdfBlob(form: FormData, today: string): Promise<Blob> {
   return pdf(<FichePdfDoc form={form} today={today} />).toBlob();
+}
+
+export async function mergeWithDevis(ficheBlob: Blob, devisFile: File | null): Promise<Blob> {
+  if (!devisFile) return ficheBlob;
+
+  const merged = await PDFDocument.create();
+
+  const ficheDoc = await PDFDocument.load(await ficheBlob.arrayBuffer());
+  const fichePages = await merged.copyPages(ficheDoc, ficheDoc.getPageIndices());
+  fichePages.forEach((page) => merged.addPage(page));
+
+  const devisDoc = await PDFDocument.load(await devisFile.arrayBuffer());
+  const devisPages = await merged.copyPages(devisDoc, devisDoc.getPageIndices());
+  devisPages.forEach((page) => merged.addPage(page));
+
+  const bytes = await merged.save();
+  return new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' });
 }
 
 export function downloadBlob(blob: Blob, filename: string) {

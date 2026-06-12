@@ -16,6 +16,7 @@ function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [mode, setMode] = useState<Mode | null>(null);
   const [formInit, setFormInit] = useState<Partial<FormData> | null>(null);
+  const [devisFile, setDevisFile] = useState<File | null>(null);
   const [navKey, setNavKey] = useState(0);
   const [navDir, setNavDir] = useState<NavDir>('forward');
 
@@ -28,17 +29,20 @@ function App() {
 
   const handleModeSelect = (m: Mode) => {
     setFormInit(null);
+    setDevisFile(null);
     navigate(m === 'intelligent' ? 'upload' : 'form', m);
   };
 
-  const handleExtractionDone = (patch: Partial<FormData>) => {
+  const handleExtractionDone = (patch: Partial<FormData>, file: File) => {
     setFormInit(patch);
+    setDevisFile(file);
     navigate('form', mode);
   };
 
   const handleBack = () => {
     navigate('home', null, 'back');
     setFormInit(null);
+    setDevisFile(null);
   };
 
   return (
@@ -60,6 +64,7 @@ function App() {
           <FormScreen
             mode={mode}
             initialData={formInit}
+            initialDevisFile={devisFile}
             batiments={data.batiments}
             setBatiments={data.setBatiments}
             entreprises={data.entreprises}
