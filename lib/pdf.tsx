@@ -1,116 +1,140 @@
-import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
+import { Document, Page, Text, View, Image, StyleSheet, pdf } from '@react-pdf/renderer';
 import type { FormData } from './types';
+
+const BORDER = '1pt solid #000000';
+const GRAY = '#d9d9d9';
 
 const styles = StyleSheet.create({
   page: {
-    padding: 32,
-    fontSize: 10,
+    padding: 20,
+    fontSize: 8,
     fontFamily: 'Helvetica',
-    color: '#1a2233',
+    color: '#000000',
   },
-  header: {
+  headerRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    borderBottom: '2pt solid #1a2233',
-    paddingBottom: 10,
-    marginBottom: 14,
+    border: BORDER,
+    marginBottom: 0,
   },
-  titleBlock: {
-    flexDirection: 'column',
-  },
-  title: {
-    fontSize: 16,
-    fontFamily: 'Helvetica-Bold',
-    marginBottom: 2,
-  },
-  subtitle: {
-    fontSize: 9,
-    color: '#5b6577',
-  },
-  badge: {
-    fontSize: 9,
-    fontFamily: 'Helvetica-Bold',
-    color: '#1a2233',
-    border: '1pt solid #1a2233',
-    borderRadius: 4,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-  },
-  section: {
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 11,
-    fontFamily: 'Helvetica-Bold',
-    marginBottom: 6,
-    paddingBottom: 3,
-    borderBottom: '0.5pt solid #c7ccd6',
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  cell: {
-    width: '50%',
-    marginBottom: 6,
-    paddingRight: 8,
-  },
-  cellFull: {
-    width: '100%',
-    marginBottom: 6,
-  },
-  label: {
-    fontSize: 8,
-    color: '#5b6577',
-    marginBottom: 2,
-    textTransform: 'uppercase',
-  },
-  value: {
-    fontSize: 10,
-    fontFamily: 'Helvetica-Bold',
-  },
-  amountsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#f0f3f8',
-    borderRadius: 4,
-    padding: 10,
-    marginTop: 4,
-  },
-  amountBlock: {
-    flexDirection: 'column',
+  headerLeft: {
+    width: '42%',
+    borderRight: BORDER,
+    padding: 8,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  amountLabel: {
-    fontSize: 8,
-    color: '#5b6577',
-    marginBottom: 2,
+  logo: {
+    width: 130,
+    marginBottom: 6,
   },
-  amountValue: {
+  headerAddress: {
+    fontSize: 6.5,
+    textAlign: 'center',
+    lineHeight: 1.4,
+  },
+  headerAddressBold: {
+    fontSize: 6.5,
+    textAlign: 'center',
+    fontFamily: 'Helvetica-Bold',
+  },
+  headerRight: {
+    width: '58%',
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
     fontSize: 13,
     fontFamily: 'Helvetica-Bold',
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 24,
-    left: 32,
-    right: 32,
-    fontSize: 8,
-    color: '#9aa2b1',
-    borderTop: '0.5pt solid #c7ccd6',
-    paddingTop: 6,
     textAlign: 'center',
+    lineHeight: 1.4,
+  },
+  table: {
+    borderLeft: BORDER,
+    borderRight: BORDER,
+    borderBottom: BORDER,
+  },
+  row: {
+    flexDirection: 'row',
+    borderBottom: BORDER,
+  },
+  rowNoBorder: {
+    flexDirection: 'row',
+  },
+  cell: {
+    borderRight: BORDER,
+    padding: 4,
+  },
+  cellLast: {
+    padding: 4,
+  },
+  cellLabel: {
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 8,
+  },
+  cellValue: {
+    fontSize: 8,
+    marginTop: 2,
+  },
+  grayCell: {
+    backgroundColor: GRAY,
+    borderRight: BORDER,
+    padding: 4,
+    justifyContent: 'center',
+  },
+  grayCellLast: {
+    backgroundColor: GRAY,
+    padding: 4,
+    justifyContent: 'center',
+  },
+  grayLabel: {
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 8,
+    textAlign: 'center',
+  },
+  centerValue: {
+    fontSize: 8,
+    textAlign: 'center',
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  checkbox: {
+    width: 8,
+    height: 8,
+    border: '1pt solid #000000',
+    marginRight: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxMark: {
+    fontSize: 7,
+    fontFamily: 'Helvetica-Bold',
+  },
+  checkboxLabel: {
+    fontSize: 7.5,
+  },
+  signatureBlock: {
+    height: 60,
   },
 });
 
-function FieldCell({ label, value, full }: { label: string; value: string; full?: boolean }) {
+function Checkbox({ checked, label }: { checked: boolean; label: string }) {
   return (
-    <View style={full ? styles.cellFull : styles.cell}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value || '—'}</Text>
+    <View style={styles.checkboxRow}>
+      <View style={styles.checkbox}>{checked && <Text style={styles.checkboxMark}>X</Text>}</View>
+      <Text style={styles.checkboxLabel}>{label}</Text>
     </View>
   );
+}
+
+function frDate(iso: string): string {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  if (!y || !m || !d) return iso;
+  return `${d}/${m}/${y}`;
 }
 
 interface FichePdfDocProps {
@@ -119,106 +143,277 @@ interface FichePdfDocProps {
 }
 
 export function FichePdfDoc({ form, today }: FichePdfDocProps) {
-  const typeLabel = form.type === 'cl2' ? 'Classe 2 — Architectes / Ingénieurs' : 'Classe 6 — Techniciens / Marchés';
-
   return (
     <Document title="Fiche de Demande de Travaux">
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <View style={styles.titleBlock}>
-            <Text style={styles.title}>Fiche de Demande de Travaux</Text>
-            <Text style={styles.subtitle}>GHU Paris Psychiatrie &amp; Neurosciences — DITMP</Text>
-            <Text style={styles.subtitle}>N° 2026-XXX (à compléter manuellement) · {today}</Text>
+        {/* En-tête */}
+        <View style={styles.headerRow}>
+          <View style={styles.headerLeft}>
+            <Image style={styles.logo} src="/logo-ghu.png" />
+            <Text style={styles.headerAddressBold}>
+              Direction de l&apos;Ingénierie, des Travaux, de la Maintenance{'\n'}et du Patrimoine
+            </Text>
+            <Text style={styles.headerAddress}>1 rue Cabanis - 75 674 PARIS CEDEX 14</Text>
           </View>
-          <Text style={styles.badge}>{typeLabel}</Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Informations fixes</Text>
-          <View style={styles.grid}>
-            <FieldCell label="Demandeur" value="Ahmed Said" />
-            <FieldCell label="Validé par" value="Jordy FEUILLAS" />
-            <FieldCell label="IG" value="AUCOUTURIER" />
-            <FieldCell label="Demandé le" value={today} />
+          <View style={styles.headerRight}>
+            <Text style={styles.headerTitle}>
+              FICHE DE DEMANDE DE TRAVAUX{'\n'}OU DE MAINTENANCE{'\n'}(hors Magasin Technique){'\n'}n° 2026-
+            </Text>
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Nature des travaux</Text>
-          <View style={styles.grid}>
-            <FieldCell label="Description" value={form.natureTravaux} full />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Marché &amp; Entreprise</Text>
-          <View style={styles.grid}>
-            <FieldCell label="Marché" value={form.marche ? `${form.marche.numero} — ${form.marche.objet}` : ''} />
-            <FieldCell label="Entreprise" value={form.entreprise ? `${form.entreprise.nom} (${form.entreprise.specialite})` : ''} />
-            <FieldCell label="Rattachement marché d'entretien" value={form.rattachement} />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Localisation</Text>
-          <View style={styles.grid}>
-            <FieldCell label="Bâtiment" value={form.batiment ? `N° ${form.batiment.numero} — ${form.batiment.nom}` : ''} />
-            <FieldCell label="Étage" value={form.etage} />
-            <FieldCell label="Pôle" value={form.pole ? `${form.pole.code} — ${form.pole.libelle}` : ''} />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Devis &amp; Montants</Text>
-          <View style={styles.grid}>
-            <FieldCell label="N° Devis" value={form.numDevis} />
-            <FieldCell label="TVA" value={`${form.tva}%`} />
-            <FieldCell label="Date début" value={form.dateDebut} />
-            <FieldCell label="Date fin" value={form.dateFin} />
-          </View>
-          <View style={styles.amountsRow}>
-            <View style={styles.amountBlock}>
-              <Text style={styles.amountLabel}>Total HT</Text>
-              <Text style={styles.amountValue}>{form.totalHT || '—'} €</Text>
+        <View style={styles.table}>
+          {/* Nature des travaux / Numéro du marché */}
+          <View style={styles.row}>
+            <View style={[styles.cell, { width: '13%' }]}>
+              <Text style={styles.cellLabel}>Nature des travaux</Text>
             </View>
-            <View style={styles.amountBlock}>
-              <Text style={styles.amountLabel}>TVA ({form.tva}%)</Text>
-              <Text style={styles.amountValue}>
-                {form.totalHT && form.totalTTC
-                  ? (parseFloat(form.totalTTC.replace(/\s/g, '').replace(',', '.')) - parseFloat(form.totalHT.replace(/\s/g, '').replace(',', '.'))).toFixed(2).replace('.', ',')
-                  : '—'}{' '}
-                €
+            <View style={[styles.cell, { width: '57%', justifyContent: 'center' }]}>
+              <Text style={[styles.cellValue, { fontFamily: 'Helvetica-Bold', textAlign: 'center', marginTop: 0 }]}>
+                {form.natureTravaux || '—'}
               </Text>
             </View>
-            <View style={styles.amountBlock}>
-              <Text style={styles.amountLabel}>Total TTC</Text>
-              <Text style={styles.amountValue}>{form.totalTTC || '—'} €</Text>
+            <View style={[styles.cell, { width: '13%' }]}>
+              <Text style={styles.cellLabel}>Numéro du marché</Text>
+            </View>
+            <View style={[styles.cellLast, { width: '17%' }]}>
+              <Text style={styles.cellValue}>{form.marche?.numero || ''}</Text>
+            </View>
+          </View>
+
+          {/* Classe 2 / Classe 6 */}
+          <View style={styles.row}>
+            <View style={[styles.cell, { width: '45%' }]}>
+              <Checkbox checked={form.type === 'cl2'} label="" />
+              <Text style={[styles.cellLabel, { marginTop: -10, marginLeft: 14 }]}>Demande de travaux (classe 2)</Text>
+              <Text style={[styles.checkboxLabel, { marginLeft: 14 }]}>(Architectes, Ingénieurs, TSH travaux)</Text>
+            </View>
+            <View style={[styles.cellLast, { width: '55%' }]}>
+              <Checkbox checked={form.type === 'cl6'} label="" />
+              <Text style={[styles.cellLabel, { marginTop: -10, marginLeft: 14 }]}>
+                Demande de travaux / maintenance (classe 6)
+              </Text>
+              <Text style={[styles.checkboxLabel, { marginLeft: 14 }]}>
+                (Techniciens, Gestionnaires du magasin technique et électromécanique, Serruriers, marchés, baux et patrimoine)
+              </Text>
+            </View>
+          </View>
+
+          {/* OPE / GER */}
+          <View style={styles.row}>
+            <View style={[styles.cell, { width: '13%' }]}>
+              <Text style={styles.cellLabel}>OPE</Text>
+            </View>
+            <View style={[styles.cell, { width: '37%' }]}>
+              <Text style={styles.cellValue}>{form.ope ? `${form.ope.code} — ${form.ope.libelle}` : ''}</Text>
+            </View>
+            <View style={[styles.cell, { width: '13%' }]}>
+              <Text style={styles.cellLabel}>GER</Text>
+            </View>
+            <View style={[styles.cellLast, { width: '37%' }]}>
+              <Text style={styles.cellValue}>{form.ger ? `${form.ger.code} — ${form.ger.libelle}` : ''}</Text>
+            </View>
+          </View>
+
+          {/* PTR / Services */}
+          <View style={styles.row}>
+            <View style={[styles.cell, { width: '13%' }]}>
+              <Text style={styles.cellLabel}>PTR</Text>
+            </View>
+            <View style={[styles.cell, { width: '37%' }]}>
+              <Text style={styles.cellValue}>{form.ptr ? `${form.ptr.code} — ${form.ptr.libelle}` : ''}</Text>
+            </View>
+            <View style={[styles.cell, { width: '13%' }]}>
+              <Text style={styles.cellLabel}>Services</Text>
+            </View>
+            <View style={[styles.cellLast, { width: '37%' }]}>
+              <Text style={styles.cellValue}></Text>
+            </View>
+          </View>
+
+          {/* Mecenat / Prestation intellectuelle */}
+          <View style={styles.row}>
+            <View style={[styles.cell, { width: '13%' }]}>
+              <Text style={styles.cellLabel}>Mecenat</Text>
+            </View>
+            <View style={[styles.cell, { width: '37%' }]}>
+              <Text style={styles.cellValue}></Text>
+            </View>
+            <View style={[styles.cell, { width: '13%' }]}>
+              <Text style={styles.cellLabel}>Prestation intellectuelle{'\n'}(hors travaux)</Text>
+            </View>
+            <View style={[styles.cellLast, { width: '37%' }]}>
+              <Text style={styles.cellValue}></Text>
+            </View>
+          </View>
+
+          {/* Rattachement / Maintenance */}
+          <View style={styles.row}>
+            <View style={[styles.cell, { width: '25%' }]}>
+              <Text style={styles.cellLabel}>Rattachement à un marché d&apos;entretien</Text>
+            </View>
+            <View style={[styles.cell, { width: '10%', justifyContent: 'center' }]}>
+              <Checkbox checked={form.rattachement === 'Oui'} label="Oui" />
+            </View>
+            <View style={[styles.cell, { width: '10%', justifyContent: 'center' }]}>
+              <Checkbox checked={form.rattachement === 'Non'} label="Non" />
+            </View>
+            <View style={[styles.cell, { width: '13%' }]}>
+              <Text style={styles.cellLabel}>Maintenance</Text>
+            </View>
+            <View style={[styles.cellLast, { width: '42%' }]}>
+              <Text style={styles.cellValue}></Text>
+            </View>
+          </View>
+
+          {/* Budget / UF */}
+          <View style={styles.row}>
+            <View style={[styles.cell, { width: '10%' }]}>
+              <Text style={styles.cellLabel}>Budget</Text>
+            </View>
+            {['H', 'Annexe B', 'Annexe C', 'Annexe E', 'Annexe P'].map((opt) => (
+              <View key={opt} style={[styles.cell, { width: '12%', justifyContent: 'center' }]}>
+                <Checkbox checked={form.budget.includes(opt)} label={opt} />
+              </View>
+            ))}
+            <View style={[styles.cell, { width: '8%' }]}>
+              <Text style={styles.cellLabel}>UF</Text>
+            </View>
+            <View style={[styles.cellLast, { width: '14%' }]}>
+              <Text style={styles.cellValue}>{form.uf}</Text>
+            </View>
+          </View>
+
+          {/* Compte Cl2 / Compte Cl6 */}
+          <View style={styles.row}>
+            <View style={[styles.cell, { width: '13%' }]}>
+              <Text style={styles.cellLabel}>Compte Cl2</Text>
+            </View>
+            <View style={[styles.cell, { width: '37%' }]}>
+              <Text style={styles.cellValue}>{form.compteCl2}</Text>
+            </View>
+            <View style={[styles.cell, { width: '13%' }]}>
+              <Text style={styles.cellLabel}>Compte Cl6</Text>
+            </View>
+            <View style={[styles.cellLast, { width: '37%' }]}>
+              <Text style={styles.cellValue}>{form.compteCl6}</Text>
+            </View>
+          </View>
+
+          {/* En-têtes Bâtiment */}
+          <View style={styles.row}>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabel}>N° bâtiment</Text>
+            </View>
+            <View style={[styles.grayCell, { width: '37%' }]}>
+              <Text style={styles.grayLabel}>Nom du bâtiment</Text>
+            </View>
+            <View style={[styles.grayCell, { width: '25%' }]}>
+              <Text style={styles.grayLabel}>Etage</Text>
+            </View>
+            <View style={[styles.grayCellLast, { width: '25%' }]}>
+              <Text style={styles.grayLabel}>Pôle</Text>
+            </View>
+          </View>
+          {/* Valeurs Bâtiment */}
+          <View style={styles.row}>
+            <View style={[styles.cell, { width: '13%', justifyContent: 'center' }]}>
+              <Text style={styles.centerValue}>{form.batiment?.numero || ''}</Text>
+            </View>
+            <View style={[styles.cell, { width: '37%', justifyContent: 'center' }]}>
+              <Text style={styles.centerValue}>{form.batiment?.nom || ''}</Text>
+            </View>
+            <View style={[styles.cell, { width: '25%', justifyContent: 'center' }]}>
+              <Text style={styles.centerValue}>{form.etage}</Text>
+            </View>
+            <View style={[styles.cellLast, { width: '25%', justifyContent: 'center' }]}>
+              <Text style={styles.centerValue}>{form.pole?.libelle || ''}</Text>
+            </View>
+          </View>
+
+          {/* En-têtes Entreprise / Devis / Montants */}
+          <View style={styles.row}>
+            <View style={[styles.grayCell, { width: '25%' }]}>
+              <Text style={styles.grayLabel}>Entreprise</Text>
+            </View>
+            <View style={[styles.grayCell, { width: '25%' }]}>
+              <Text style={styles.grayLabel}>N° DEVIS</Text>
+            </View>
+            <View style={[styles.grayCell, { width: '25%' }]}>
+              <Text style={styles.grayLabel}>TOTAL HT</Text>
+            </View>
+            <View style={[styles.grayCellLast, { width: '25%' }]}>
+              <Text style={styles.grayLabel}>TOTAL TTC</Text>
+            </View>
+          </View>
+          {/* Valeurs Entreprise / Devis / Montants */}
+          <View style={styles.row}>
+            <View style={[styles.cell, { width: '25%', justifyContent: 'center' }]}>
+              <Text style={styles.centerValue}>{form.entreprise?.nom || ''}</Text>
+            </View>
+            <View style={[styles.cell, { width: '25%', justifyContent: 'center' }]}>
+              <Text style={[styles.centerValue, { fontFamily: 'Helvetica-Bold' }]}>{form.numDevis}</Text>
+            </View>
+            <View style={[styles.cell, { width: '25%', justifyContent: 'center' }]}>
+              <Text style={[styles.centerValue, { textAlign: 'right', fontFamily: 'Helvetica-Bold' }]}>
+                {form.totalHT ? `${form.totalHT} €` : ''}
+              </Text>
+            </View>
+            <View style={[styles.cellLast, { width: '25%', justifyContent: 'center' }]}>
+              <Text style={[styles.centerValue, { textAlign: 'right', fontFamily: 'Helvetica-Bold' }]}>
+                {form.totalTTC ? `${form.totalTTC} €` : ''}
+              </Text>
+            </View>
+          </View>
+
+          {/* TVA / Délai */}
+          <View style={styles.row}>
+            <View style={[styles.cell, { width: '25%' }]}>
+              <Text style={styles.cellLabel}>Taux de TVA applicable :</Text>
+              <Checkbox checked={form.tva === '10'} label="10,00%" />
+              <Checkbox checked={form.tva === '20'} label="20,00%" />
+            </View>
+            <View style={[styles.cell, { width: '37.5%', alignItems: 'center', justifyContent: 'center' }]}>
+              <Text style={[styles.cellLabel, { textAlign: 'center' }]}>Délai d&apos;exécution de l&apos;opération</Text>
+            </View>
+            <View style={[styles.cellLast, { width: '37.5%' }]}>
+              <View style={{ flexDirection: 'row', borderBottom: BORDER, paddingBottom: 2, marginBottom: 2 }}>
+                <Text style={[styles.cellLabel, { width: '30%' }]}>Début</Text>
+                <Text style={styles.cellValue}>{frDate(form.dateDebut)}</Text>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={[styles.cellLabel, { width: '30%' }]}>Fin</Text>
+                <Text style={styles.cellValue}>{frDate(form.dateFin)}</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Demandé le / Responsable / Directeur */}
+          <View style={styles.row}>
+            <View style={[styles.grayCell, { width: '33.34%', justifyContent: 'center' }]}>
+              <Text style={styles.grayLabel}>Demandé le {today}</Text>
+            </View>
+            <View style={[styles.grayCell, { width: '33.33%' }]}>
+              <Text style={styles.grayLabel}>Responsable du département</Text>
+            </View>
+            <View style={[styles.grayCellLast, { width: '33.33%' }]}>
+              <Text style={styles.grayLabel}>Directeur</Text>
+            </View>
+          </View>
+
+          {/* Signatures */}
+          <View style={[styles.row, { borderBottom: 'none' }]}>
+            <View style={[styles.cell, { width: '33.34%' }, styles.signatureBlock]}>
+              <Text style={styles.cellLabel}>Demandeur : Ahmed Said</Text>
+            </View>
+            <View style={[styles.cell, { width: '33.33%' }, styles.signatureBlock]}>
+              <Text style={styles.cellLabel}>Validé par : Jordy FEUILLAS</Text>
+            </View>
+            <View style={[styles.cellLast, { width: '33.33%' }, styles.signatureBlock]}>
+              <Text style={styles.cellLabel}>Ingénieur Général : AUCOUTURIER</Text>
             </View>
           </View>
         </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Identifiants OPE / GER / PTR</Text>
-          <View style={styles.grid}>
-            <FieldCell label="OPE" value={form.ope ? `${form.ope.code} — ${form.ope.libelle}` : ''} />
-            <FieldCell label="GER" value={form.ger ? `${form.ger.code} — ${form.ger.libelle}` : ''} />
-            <FieldCell label="PTR" value={form.ptr ? `${form.ptr.code} — ${form.ptr.libelle}` : ''} />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Budget &amp; Comptes</Text>
-          <View style={styles.grid}>
-            <FieldCell label="Budget" value={form.budget.length > 0 ? form.budget.join(', ') : ''} />
-            <FieldCell label="UF" value={form.uf} />
-            <FieldCell label="Compte Cl2" value={form.compteCl2} />
-            <FieldCell label="Compte Cl6" value={form.compteCl6} />
-          </View>
-        </View>
-
-        <Text style={styles.footer}>
-          Document généré automatiquement — GHU Paris Psychiatrie &amp; Neurosciences · DITMP · {today}
-        </Text>
       </Page>
     </Document>
   );
