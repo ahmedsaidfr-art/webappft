@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Icon } from '@/components/icon';
 import { Section } from '@/components/widgets/Section';
 import { Field } from '@/components/widgets/Field';
@@ -11,7 +11,7 @@ import { AmountCard } from '@/components/widgets/AmountCard';
 import { SearchSheet, type AddField } from '@/components/ui/SearchSheet';
 import { Toast, type ToastData } from '@/components/ui/Toast';
 import { parseAmount, formatAmount } from '@/lib/format';
-import { generateFichePdfBlob, downloadBlob } from '@/lib/pdf';
+import { generateFichePdfBlob, mergeWithDevis, downloadBlob } from '@/lib/pdf';
 import { BUDGET_OPTIONS } from '@/lib/data';
 import { emptyFormData } from '@/lib/types';
 import type {
@@ -47,6 +47,7 @@ type SheetKey = 'batiment' | 'entreprise' | 'marche' | 'ope' | 'ger' | 'ptr' | '
 interface FormScreenProps {
   mode: Mode;
   initialData: Partial<FormData> | null;
+  initialDevisFile?: File | null;
   batiments: Batiment[];
   setBatiments: React.Dispatch<React.SetStateAction<Batiment[]>>;
   entreprises: Entreprise[];
@@ -67,6 +68,7 @@ interface FormScreenProps {
 export function FormScreen({
   mode,
   initialData,
+  initialDevisFile = null,
   batiments, setBatiments,
   entreprises, setEntreprises,
   marches, setMarches,
@@ -85,6 +87,8 @@ export function FormScreen({
   const [sheet, setSheet] = useState<SheetKey | null>(null);
   const [toast, setToast] = useState<ToastData | null>(null);
   const [ctaState, setCtaState] = useState<'idle' | 'loading' | 'success'>('idle');
+  const [devisFile, setDevisFile] = useState<File | null>(initialDevisFile);
+  const devisInputRef = useRef<HTMLInputElement>(null);
 
   const today = new Date().toLocaleDateString('fr-FR');
 
@@ -161,7 +165,8 @@ export function FormScreen({
     if (!validate()) return;
     setCtaState('loading');
     try {
-      const blob = await generateFichePdfBlob(form, today);
+      const ficheBlob = await generateFichePdfBlob(form, today);
+      const blob = await mergeWithDevis(ficheBlob, devisFile);
       const filename = `Fiche-travaux-${form.numDevis || 'sans-devis'}.pdf`;
       downloadBlob(blob, filename);
       setCtaState('success');
@@ -445,6 +450,24 @@ export function FormScreen({
                 placeholder="PR2605-XXXXX"
               />
             </Field>
+            <Field label="Devis PDF (optionnel)" hint="Sera fusionné avec la fiche dans le PDF final">
+              <SelectBtn
+                value={devisFile?.name}
+                placeholder="Joindre le devis PDF…"
+                onClick={() => devisInputRef.current?.click()}
+                onClear={() => {
+                  setDevisFile(null);
+                  if (devisInputRef.current) devisInputRef.current.value = '';
+                }}
+              />
+              <input
+                ref={devisInputRef}
+                type="file"
+                accept="application/pdf"
+                style={{ display: 'none' }}
+                onChange={(e) => setDevisFile(e.target.files?.[0] || null)}
+              />
+            </Field>
             <Field label="TVA" hint={form.batiment ? `Pré-rempli depuis le bâtiment ${form.batiment.numero} — modifiable` : null}>
               <Seg
                 value={form.tva}
@@ -555,7 +578,9 @@ export function FormScreen({
                 </>
               )}
             </button>
-            <div className="cta-sub">Fiche travaux + devis original fusionnés en un seul fichier</div>
+            <div className="cta-sub">
+              {devisFile ? 'Fiche travaux + devis original fusionnés en un seul fichier' : 'Joignez un devis PDF ci-dessus pour le fusionner avec la fiche'}
+            </div>
           </div>
         </div>
       </div>
