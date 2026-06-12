@@ -11,6 +11,7 @@ import { AmountCard } from '@/components/widgets/AmountCard';
 import { SearchSheet, type AddField } from '@/components/ui/SearchSheet';
 import { Toast, type ToastData } from '@/components/ui/Toast';
 import { parseAmount, formatAmount } from '@/lib/format';
+import { generateFichePdfBlob, downloadBlob } from '@/lib/pdf';
 import { BUDGET_OPTIONS } from '@/lib/data';
 import { emptyFormData } from '@/lib/types';
 import type {
@@ -155,15 +156,21 @@ export function FormScreen({
     return true;
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setSubmitted(true);
     if (!validate()) return;
     setCtaState('loading');
-    setTimeout(() => {
+    try {
+      const blob = await generateFichePdfBlob(form, today);
+      const filename = `Fiche-travaux-${form.numDevis || 'sans-devis'}.pdf`;
+      downloadBlob(blob, filename);
       setCtaState('success');
       setToast({ msg: 'PDF généré avec succès !', type: 'success' });
       setTimeout(() => setCtaState('idle'), 3000);
-    }, 1800);
+    } catch {
+      setCtaState('idle');
+      setToast({ msg: 'Erreur lors de la génération du PDF', type: 'error' });
+    }
   };
 
   const handleCTATap = (e: React.MouseEvent<HTMLButtonElement>) => {
