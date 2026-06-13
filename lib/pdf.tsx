@@ -456,7 +456,10 @@ export async function isValidPdf(file: File): Promise<boolean> {
 }
 
 export function downloadBlob(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob);
+  // Use a generic binary MIME type so the browser downloads the file
+  // instead of opening it in a PDF viewer/new tab.
+  const downloadable = new Blob([blob], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(downloadable);
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;

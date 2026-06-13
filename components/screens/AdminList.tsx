@@ -108,7 +108,7 @@ export function AdminList<T extends AdminItem>({ title, items, setItems, columns
           </div>
         )}
 
-        <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+        <div>
           {filtered.map((item) => (
             <div key={item.id} style={{ padding: '10px 0', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', gap: 8 }}>
               {editId === item.id && editItem ? (
