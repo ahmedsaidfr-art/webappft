@@ -56,6 +56,7 @@ function App() {
             onBack={handleBack}
             batiments={data.batiments}
             entreprises={data.entreprises}
+            setEntreprises={data.setEntreprises}
             marches={data.marches}
           />
         )}
