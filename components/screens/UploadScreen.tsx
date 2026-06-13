@@ -14,6 +14,7 @@ interface UploadScreenProps {
   onBack: () => void;
   batiments: Batiment[];
   entreprises: Entreprise[];
+  setEntreprises: React.Dispatch<React.SetStateAction<Entreprise[]>>;
   marches: Marche[];
 }
 
@@ -26,7 +27,7 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export function UploadScreen({ onComplete, onBack, batiments, entreprises, marches }: UploadScreenProps) {
+export function UploadScreen({ onComplete, onBack, batiments, entreprises, setEntreprises, marches }: UploadScreenProps) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [doneSteps, setDoneSteps] = useState<number[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -34,8 +35,13 @@ export function UploadScreen({ onComplete, onBack, batiments, entreprises, march
 
   const buildFormPatch = (extracted: ExtractDevisResult): Partial<FormData> => {
     const bat = batiments.find((b) => b.numero === extracted.batiment_numero) || null;
-    const ent = entreprises.find((e) => e.nom === extracted.nom_entreprise) || null;
     const mar = marches.find((m) => m.entreprise === extracted.nom_entreprise) || null;
+
+    let ent = entreprises.find((e) => e.nom === extracted.nom_entreprise) || null;
+    if (!ent && extracted.nom_entreprise) {
+      ent = { id: Date.now(), nom: extracted.nom_entreprise, specialite: '' };
+      setEntreprises((p) => [...p, ent as Entreprise]);
+    }
 
     const tva = extracted.taux_tva || bat?.tva_defaut || '20';
     const htN = parseAmount(extracted.montant_ht);

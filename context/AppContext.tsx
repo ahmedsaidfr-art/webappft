@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Batiment, Entreprise, Marche, Identifiant, Pole } from '@/lib/types';
+import { supabase } from '@/lib/supabase';
 import {
   SEED_BATIMENTS,
   SEED_ENTREPRISES,
@@ -31,38 +32,66 @@ interface AppContextValue {
 
 const AppContext = createContext<AppContextValue | null>(null);
 
-function usePersistedState<T>(key: string, seed: T): [T, React.Dispatch<React.SetStateAction<T>>] {
-  const [state, setState] = useState<T>(seed);
+type WithId = { id: number };
+
+async function syncDiff<T extends WithId>(table: string, prev: T[], next: T[]) {
+  const prevById = new Map(prev.map((i) => [i.id, i]));
+  const nextIds = new Set(next.map((i) => i.id));
+
+  const toDelete = prev.filter((i) => !nextIds.has(i.id));
+  const toInsert = next.filter((i) => !prevById.has(i.id));
+  const toUpdate = next.filter((i) => {
+    const old = prevById.get(i.id);
+    return old && JSON.stringify(old) !== JSON.stringify(i);
+  });
+
+  try {
+    if (toDelete.length) {
+      await supabase.from(table).delete().in('id', toDelete.map((i) => i.id));
+    }
+    if (toInsert.length) {
+      await supabase.from(table).insert(toInsert);
+    }
+    for (const item of toUpdate) {
+      await supabase.from(table).update(item).eq('id', item.id);
+    }
+  } catch {
+    // ignore sync errors (e.g. offline)
+  }
+}
+
+function useSupabaseCollection<T extends WithId>(table: string, seed: T[]): [T[], React.Dispatch<React.SetStateAction<T[]>>] {
+  const [state, setState] = useState<T[]>(seed);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(key);
-      if (raw) setState(JSON.parse(raw));
-    } catch {
-      // ignore malformed storage
-    }
+    supabase
+      .from(table)
+      .select('*')
+      .then(({ data, error }) => {
+        if (!error && data && data.length > 0) setState(data as T[]);
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(state));
-    } catch {
-      // ignore storage errors (e.g. quota)
-    }
-  }, [key, state]);
+  const setAndSync: React.Dispatch<React.SetStateAction<T[]>> = (action) => {
+    setState((prev) => {
+      const next = typeof action === 'function' ? (action as (p: T[]) => T[])(prev) : action;
+      syncDiff(table, prev, next);
+      return next;
+    });
+  };
 
-  return [state, setState];
+  return [state, setAndSync];
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [batiments, setBatiments] = usePersistedState('ghu.batiments', SEED_BATIMENTS);
-  const [entreprises, setEntreprises] = usePersistedState('ghu.entreprises', SEED_ENTREPRISES);
-  const [marches, setMarches] = usePersistedState('ghu.marches', SEED_MARCHES);
-  const [opes, setOpes] = usePersistedState('ghu.opes', SEED_OPES);
-  const [gers, setGers] = usePersistedState('ghu.gers', SEED_GERS);
-  const [ptrs, setPtrs] = usePersistedState('ghu.ptrs', SEED_PTRS);
-  const [poles, setPoles] = usePersistedState('ghu.poles', SEED_POLES);
+  const [batiments, setBatiments] = useSupabaseCollection('webappft_batiments', SEED_BATIMENTS);
+  const [entreprises, setEntreprises] = useSupabaseCollection('webappft_entreprises', SEED_ENTREPRISES);
+  const [marches, setMarches] = useSupabaseCollection('webappft_marches', SEED_MARCHES);
+  const [opes, setOpes] = useSupabaseCollection('webappft_opes', SEED_OPES);
+  const [gers, setGers] = useSupabaseCollection('webappft_gers', SEED_GERS);
+  const [ptrs, setPtrs] = useSupabaseCollection('webappft_ptrs', SEED_PTRS);
+  const [poles, setPoles] = useSupabaseCollection('webappft_poles', SEED_POLES);
 
   return (
     <AppContext.Provider
