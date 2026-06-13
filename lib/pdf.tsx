@@ -438,17 +438,17 @@ export async function mergeWithDevis(ficheBlob: Blob, devisFile: File | null): P
   const fichePages = await merged.copyPages(ficheDoc, ficheDoc.getPageIndices());
   fichePages.forEach((page) => merged.addPage(page));
 
-  const devisDoc = await PDFDocument.load(await devisFile.arrayBuffer());
+  const devisDoc = await PDFDocument.load(await devisFile.arrayBuffer(), { ignoreEncryption: true });
   const devisPages = await merged.copyPages(devisDoc, devisDoc.getPageIndices());
   devisPages.forEach((page) => merged.addPage(page));
 
   const bytes = await merged.save();
-  return new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' });
+  return new Blob([new Uint8Array(bytes)], { type: 'application/pdf' });
 }
 
 export async function isValidPdf(file: File): Promise<boolean> {
   try {
-    await PDFDocument.load(await file.arrayBuffer());
+    await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
     return true;
   } catch {
     return false;
