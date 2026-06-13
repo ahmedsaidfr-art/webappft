@@ -10,8 +10,9 @@ import { Chips } from '@/components/widgets/Chips';
 import { AmountCard } from '@/components/widgets/AmountCard';
 import { SearchSheet, type AddField } from '@/components/ui/SearchSheet';
 import { PdfPreviewSheet } from '@/components/ui/PdfPreviewSheet';
+import { DownloadDoneSheet } from '@/components/ui/DownloadDoneSheet';
 import { Toast, type ToastData } from '@/components/ui/Toast';
-import { parseAmount, formatAmount } from '@/lib/format';
+import { parseAmount, formatAmount, sanitizeAmountInput } from '@/lib/format';
 import { generateFichePdfBlob, mergeWithDevis, downloadBlob, isValidPdf } from '@/lib/pdf';
 import { BUDGET_OPTIONS } from '@/lib/data';
 import { emptyFormData } from '@/lib/types';
@@ -91,6 +92,7 @@ export function FormScreen({
   const [devisFile, setDevisFile] = useState<File | null>(initialDevisFile);
   const devisInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<{ url: string; blob: Blob; filename: string } | null>(null);
+  const [downloadDone, setDownloadDone] = useState(false);
 
   const today = new Date().toLocaleDateString('fr-FR');
 
@@ -103,12 +105,14 @@ export function FormScreen({
     });
 
   // ── Number helpers ──────────────────────────────────────────────────────
-  const htChange = (v: string) => {
+  const htChange = (raw: string) => {
+    const v = sanitizeAmountInput(raw);
     const ht = parseAmount(v);
     const rate = parseFloat(form.tva) / 100;
     setFormState((f) => ({ ...f, totalHT: v, totalTTC: !isNaN(ht) ? formatAmount(ht * (1 + rate)) : f.totalTTC }));
   };
-  const ttcChange = (v: string) => {
+  const ttcChange = (raw: string) => {
+    const v = sanitizeAmountInput(raw);
     const ttc = parseAmount(v);
     const rate = parseFloat(form.tva) / 100;
     setFormState((f) => ({ ...f, totalTTC: v, totalHT: !isNaN(ttc) ? formatAmount(ttc / (1 + rate)) : f.totalHT }));
@@ -190,6 +194,22 @@ export function FormScreen({
     setToast({ msg: 'PDF téléchargé avec succès !', type: 'success' });
     setTimeout(() => setCtaState('idle'), 3000);
     closePreview();
+    setDownloadDone(true);
+  };
+
+  const handleNewFiche = () => {
+    setFormState({ ...emptyFormData });
+    setDevisFile(null);
+    if (devisInputRef.current) devisInputRef.current.value = '';
+    setOpenSections(new Set(['nature', 'marche', 'batiment', 'montants']));
+    setErrors({});
+    setSubmitted(false);
+    setCtaState('idle');
+    setDownloadDone(false);
+  };
+
+  const handleEditFiche = () => {
+    setDownloadDone(false);
   };
 
   const handleDevisFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -249,6 +269,16 @@ export function FormScreen({
     { key: 'code', label: 'Code', placeholder: 'Ex: 14e' },
     { key: 'libelle', label: 'Libellé', placeholder: 'Description complète' },
   ];
+
+  const onSelectMarche = (item: Marche) => {
+    let ent = entreprises.find((e) => e.nom.toLowerCase() === item.entreprise.toLowerCase()) || null;
+    if (!ent && item.entreprise) {
+      ent = { id: Date.now(), nom: item.entreprise, specialite: '' };
+      setEntreprises((p) => [...p, ent as Entreprise]);
+    }
+    setFormState((f) => ({ ...f, marche: item, entreprise: ent || f.entreprise }));
+    if (ent) clearErr('entreprise');
+  };
 
   const onSelectBatiment = (item: Batiment) => {
     const tva = item.tva_defaut || '20';
@@ -506,6 +536,7 @@ export function FormScreen({
               <Field label="Total HT" required error={submitted && errors.totalHT}>
                 <input
                   className={`input input--num${submitted && errors.totalHT ? ' has-error' : ''}`}
+                  inputMode="decimal"
                   value={form.totalHT}
                   onChange={(e) => {
                     htChange(e.target.value);
@@ -517,6 +548,7 @@ export function FormScreen({
               <Field label="Total TTC" required error={submitted && errors.totalTTC}>
                 <input
                   className={`input input--num${submitted && errors.totalTTC ? ' has-error' : ''}`}
+                  inputMode="decimal"
                   value={form.totalTTC}
                   onChange={(e) => {
                     ttcChange(e.target.value);
@@ -662,7 +694,7 @@ export function FormScreen({
           addLabel="marché"
           addFields={marcheAddFields}
           onAddItem={(item) => setMarches((p) => [...p, item])}
-          onSelect={(item) => set('marche', item)}
+          onSelect={onSelectMarche}
           onClose={() => setSheet(null)}
           renderRow={(item) => (
             <div style={{ width: '100%' }}>
@@ -764,6 +796,9 @@ export function FormScreen({
       {preview && (
         <PdfPreviewSheet url={preview.url} filename={preview.filename} onDownload={handleDownload} onClose={closePreview} />
       )}
+
+      {/* Download done */}
+      {downloadDone && <DownloadDoneSheet onNewFiche={handleNewFiche} onEditFiche={handleEditFiche} />}
 
       {/* Toast */}
       {toast && <Toast msg={toast.msg} type={toast.type} onDone={() => setToast(null)} />}
