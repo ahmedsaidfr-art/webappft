@@ -177,29 +177,29 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
             <View style={[styles.grayCell, { width: '13%' }]}>
               <Text style={styles.grayLabelLeft}>Nature des travaux</Text>
             </View>
-            <View style={[styles.cell, { width: '60%', alignItems: 'center' }]}>
+            <View style={[styles.cell, { width: '52%', alignItems: 'center' }]}>
               <Text style={[styles.cellValue, { fontFamily: 'Helvetica-Bold', textAlign: 'center', marginTop: 0 }]}>
                 {form.natureTravaux || '—'}
               </Text>
             </View>
-            <View style={[styles.grayCell, { width: '14%' }]}>
+            <View style={[styles.grayCell, { width: '13%' }]}>
               <Text style={styles.grayLabelLeft}>Numéro du marché</Text>
             </View>
-            <View style={[styles.cellLast, { width: '13%' }]}>
+            <View style={[styles.cellLast, { width: '22%' }]}>
               <Text style={styles.cellValue}>{form.marche?.numero || ''}</Text>
             </View>
           </View>
 
           {/* Classe 2 / Classe 6 */}
           <View style={[styles.row, { flex: 1.8 }]}>
-            <View style={[styles.cell, { width: '45%' }]}>
+            <View style={[styles.cell, { width: '41%' }]}>
               <View style={styles.checkboxRow}>
                 <View style={styles.checkbox}>{form.type === 'cl2' && <Text style={styles.checkboxMark}>X</Text>}</View>
                 <Text style={styles.cellLabel}>Demande de travaux (classe 2)</Text>
               </View>
               <Text style={[styles.checkboxLabel, { marginLeft: 12, marginTop: 2 }]}>(Architectes, Ingénieurs, TSH travaux)</Text>
             </View>
-            <View style={[styles.cellLast, { width: '55%' }]}>
+            <View style={[styles.cellLast, { width: '59%' }]}>
               <View style={styles.checkboxRow}>
                 <View style={styles.checkbox}>{form.type === 'cl6' && <Text style={styles.checkboxMark}>X</Text>}</View>
                 <Text style={styles.cellLabel}>Demande de travaux / maintenance (classe 6)</Text>
@@ -215,13 +215,13 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
             <View style={[styles.grayCell, { width: '13%' }]}>
               <Text style={styles.grayLabelLeft}>OPE</Text>
             </View>
-            <View style={[styles.cell, { width: '37%' }]}>
+            <View style={[styles.cell, { width: '28%' }]}>
               <Text style={styles.cellValue}>{form.ope ? `${form.ope.code} — ${form.ope.libelle}` : ''}</Text>
             </View>
-            <View style={[styles.grayCell, { width: '13%' }]}>
+            <View style={[styles.grayCell, { width: '24%' }]}>
               <Text style={styles.grayLabelLeft}>GER</Text>
             </View>
-            <View style={[styles.cellLast, { width: '37%' }]}>
+            <View style={[styles.cellLast, { width: '35%' }]}>
               <Text style={styles.cellValue}>{form.ger ? `${form.ger.code} — ${form.ger.libelle}` : ''}</Text>
             </View>
           </View>
@@ -231,13 +231,13 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
             <View style={[styles.grayCell, { width: '13%' }]}>
               <Text style={styles.grayLabelLeft}>PTR</Text>
             </View>
-            <View style={[styles.cell, { width: '37%' }]}>
+            <View style={[styles.cell, { width: '28%' }]}>
               <Text style={styles.cellValue}>{form.ptr ? `${form.ptr.code} — ${form.ptr.libelle}` : ''}</Text>
             </View>
-            <View style={[styles.grayCell, { width: '13%' }]}>
+            <View style={[styles.grayCell, { width: '24%' }]}>
               <Text style={styles.grayLabelLeft}>Services</Text>
             </View>
-            <View style={[styles.cellLast, { width: '37%' }]}>
+            <View style={[styles.cellLast, { width: '35%' }]}>
               <Text style={styles.cellValue}></Text>
             </View>
           </View>
@@ -247,50 +247,56 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
             <View style={[styles.grayCell, { width: '13%' }]}>
               <Text style={styles.grayLabelLeft}>Mecenat</Text>
             </View>
-            <View style={[styles.cell, { width: '37%' }]}>
+            <View style={[styles.cell, { width: '28%' }]}>
               <Text style={styles.cellValue}></Text>
             </View>
-            <View style={[styles.grayCell, { width: '13%' }]}>
+            <View style={[styles.grayCell, { width: '24%' }]}>
               <Text style={styles.grayLabelLeft}>Prestation intellectuelle{'\n'}(hors travaux)</Text>
             </View>
-            <View style={[styles.cellLast, { width: '37%' }]}>
+            <View style={[styles.cellLast, { width: '35%' }]}>
               <Text style={styles.cellValue}></Text>
             </View>
           </View>
 
           {/* Rattachement / Maintenance */}
           <View style={[styles.row, { flex: 1.4 }]}>
-            <View style={[styles.grayCell, { width: '20%' }]}>
+            <View style={[styles.grayCell, { width: '13%' }]}>
               <Text style={styles.grayLabelLeft}>Rattachement à un marché d&apos;entretien</Text>
             </View>
-            <View style={[styles.cell, { width: '11%', alignItems: 'center' }]}>
+            <View style={[styles.cell, { width: '13%', alignItems: 'center' }]}>
               <Checkbox checked={form.rattachement === 'Oui'} label="Oui" />
             </View>
-            <View style={[styles.cell, { width: '11%', alignItems: 'center' }]}>
+            <View style={[styles.cell, { width: '15%', alignItems: 'center' }]}>
               <Checkbox checked={form.rattachement === 'Non'} label="Non" />
             </View>
-            <View style={[styles.grayCell, { width: '13%' }]}>
+            <View style={[styles.grayCell, { width: '24%' }]}>
               <Text style={styles.grayLabelLeft}>Maintenance</Text>
             </View>
-            <View style={[styles.cellLast, { width: '45%' }]}>
+            <View style={[styles.cellLast, { width: '35%' }]}>
               <Text style={styles.cellValue}></Text>
             </View>
           </View>
 
           {/* Budget / UF */}
           <View style={[styles.row, { flex: 1.4 }]}>
-            <View style={[styles.grayCell, { width: '10%' }]}>
+            <View style={[styles.grayCell, { width: '13%' }]}>
               <Text style={styles.grayLabelLeft}>Budget</Text>
             </View>
-            {['H', 'Annexe B', 'Annexe C', 'Annexe E', 'Annexe P'].map((opt) => (
-              <View key={opt} style={[styles.cell, { width: '12%', alignItems: 'center' }]}>
+            {[
+              ['H', '13%'],
+              ['Annexe B', '15%'],
+              ['Annexe C', '12%'],
+              ['Annexe E', '12%'],
+              ['Annexe P', '11%'],
+            ].map(([opt, width]) => (
+              <View key={opt} style={[styles.cell, { width, alignItems: 'center' }]}>
                 <Checkbox checked={form.budget.includes(opt)} label={opt} />
               </View>
             ))}
-            <View style={[styles.grayCell, { width: '10%' }]}>
+            <View style={[styles.grayCell, { width: '7%' }]}>
               <Text style={styles.grayLabelLeft}>UF</Text>
             </View>
-            <View style={[styles.cellLast, { width: '20%' }]}>
+            <View style={[styles.cellLast, { width: '17%' }]}>
               <Text style={styles.cellValue}>{form.uf}</Text>
             </View>
           </View>
@@ -300,13 +306,13 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
             <View style={[styles.grayCell, { width: '13%' }]}>
               <Text style={styles.grayLabelLeft}>Compte Cl2</Text>
             </View>
-            <View style={[styles.cell, { width: '37%' }]}>
+            <View style={[styles.cell, { width: '28%' }]}>
               <Text style={styles.cellValue}>{form.compteCl2}</Text>
             </View>
-            <View style={[styles.grayCell, { width: '13%' }]}>
+            <View style={[styles.grayCell, { width: '24%' }]}>
               <Text style={styles.grayLabelLeft}>Compte Cl6</Text>
             </View>
-            <View style={[styles.cellLast, { width: '37%' }]}>
+            <View style={[styles.cellLast, { width: '35%' }]}>
               <Text style={styles.cellValue}>{form.compteCl6}</Text>
             </View>
           </View>
@@ -316,13 +322,13 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
             <View style={[styles.grayCell, { width: '13%' }]}>
               <Text style={styles.grayLabel}>N° bâtiment</Text>
             </View>
-            <View style={[styles.grayCell, { width: '37%' }]}>
+            <View style={[styles.grayCell, { width: '28%' }]}>
               <Text style={styles.grayLabel}>Nom du bâtiment</Text>
             </View>
-            <View style={[styles.grayCell, { width: '25%' }]}>
+            <View style={[styles.grayCell, { width: '35%' }]}>
               <Text style={styles.grayLabel}>Etage</Text>
             </View>
-            <View style={[styles.grayCellLast, { width: '25%' }]}>
+            <View style={[styles.grayCellLast, { width: '24%' }]}>
               <Text style={styles.grayLabel}>Pôle</Text>
             </View>
           </View>
@@ -331,46 +337,46 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
             <View style={[styles.cell, { width: '13%', alignItems: 'center' }]}>
               <Text style={styles.centerValue}>{form.batiment?.numero || ''}</Text>
             </View>
-            <View style={[styles.cell, { width: '37%', alignItems: 'center' }]}>
+            <View style={[styles.cell, { width: '28%', alignItems: 'center' }]}>
               <Text style={styles.centerValue}>{form.batiment?.nom || ''}</Text>
             </View>
-            <View style={[styles.cell, { width: '25%', alignItems: 'center' }]}>
+            <View style={[styles.cell, { width: '35%', alignItems: 'center' }]}>
               <Text style={styles.centerValue}>{form.etage}</Text>
             </View>
-            <View style={[styles.cellLast, { width: '25%', alignItems: 'center' }]}>
+            <View style={[styles.cellLast, { width: '24%', alignItems: 'center' }]}>
               <Text style={styles.centerValue}>{form.pole?.libelle || ''}</Text>
             </View>
           </View>
 
           {/* En-têtes Entreprise / Devis / Montants */}
           <View style={[styles.row, { flex: 0.8 }]}>
-            <View style={[styles.grayCell, { width: '25%' }]}>
+            <View style={[styles.grayCell, { width: '29%' }]}>
               <Text style={styles.grayLabel}>Entreprise</Text>
             </View>
-            <View style={[styles.grayCell, { width: '25%' }]}>
+            <View style={[styles.grayCell, { width: '24%' }]}>
               <Text style={styles.grayLabel}>N° DEVIS</Text>
             </View>
-            <View style={[styles.grayCell, { width: '25%' }]}>
+            <View style={[styles.grayCell, { width: '23%' }]}>
               <Text style={styles.grayLabel}>TOTAL HT</Text>
             </View>
-            <View style={[styles.grayCellLast, { width: '25%' }]}>
+            <View style={[styles.grayCellLast, { width: '24%' }]}>
               <Text style={styles.grayLabel}>TOTAL TTC</Text>
             </View>
           </View>
           {/* Valeurs Entreprise / Devis / Montants */}
           <View style={[styles.row, { flex: 1.3 }]}>
-            <View style={[styles.cell, { width: '25%', alignItems: 'center' }]}>
+            <View style={[styles.cell, { width: '29%', alignItems: 'center' }]}>
               <Text style={styles.centerValue}>{form.entreprise?.nom || ''}</Text>
             </View>
-            <View style={[styles.cell, { width: '25%', alignItems: 'center' }]}>
+            <View style={[styles.cell, { width: '24%', alignItems: 'center' }]}>
               <Text style={[styles.centerValue, { fontFamily: 'Helvetica-Bold' }]}>{form.numDevis}</Text>
             </View>
-            <View style={[styles.cell, { width: '25%', alignItems: 'flex-end' }]}>
+            <View style={[styles.cell, { width: '23%', alignItems: 'flex-end' }]}>
               <Text style={[styles.centerValue, { textAlign: 'right', fontFamily: 'Helvetica-Bold' }]}>
                 {form.totalHT ? `${form.totalHT} €` : ''}
               </Text>
             </View>
-            <View style={[styles.cellLast, { width: '25%', alignItems: 'flex-end' }]}>
+            <View style={[styles.cellLast, { width: '24%', alignItems: 'flex-end' }]}>
               <Text style={[styles.centerValue, { textAlign: 'right', fontFamily: 'Helvetica-Bold' }]}>
                 {form.totalTTC ? `${form.totalTTC} €` : ''}
               </Text>
@@ -379,21 +385,33 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
 
           {/* TVA / Délai */}
           <View style={[styles.row, { flex: 2.2 }]}>
-            <View style={[styles.grayCell, { width: '25%' }]}>
+            <View style={[styles.grayCell, { width: '13%' }]}>
               <Text style={styles.grayLabelLeft}>Taux de TVA applicable :</Text>
-              <Checkbox checked={form.tva === '10'} label="10,00%" />
-              <Checkbox checked={form.tva === '20'} label="20,00%" />
             </View>
-            <View style={[styles.cell, { width: '37.5%', alignItems: 'center' }]}>
+            <View style={[styles.grayCell, { width: '15%', justifyContent: 'space-around' }]}>
+              <View style={{ borderBottom: BORDER, paddingBottom: 4 }}>
+                <Checkbox checked={form.tva === '10'} label="10,00%" />
+              </View>
+              <View style={{ paddingTop: 4 }}>
+                <Checkbox checked={form.tva === '20'} label="20,00%" />
+              </View>
+            </View>
+            <View style={[styles.grayCell, { width: '36%', alignItems: 'center' }]}>
               <Text style={[styles.cellLabel, { textAlign: 'center' }]}>Délai d&apos;exécution de l&apos;opération</Text>
             </View>
-            <View style={[styles.cellLast, { width: '37.5%', justifyContent: 'space-around' }]}>
-              <View style={{ flexDirection: 'row', borderBottom: BORDER, paddingBottom: 4 }}>
-                <Text style={[styles.cellLabel, { width: '30%' }]}>Début</Text>
+            <View style={[styles.grayCell, { width: '12%', justifyContent: 'space-around' }]}>
+              <View style={{ borderBottom: BORDER, paddingBottom: 4 }}>
+                <Text style={styles.cellLabel}>Début</Text>
+              </View>
+              <View style={{ paddingTop: 4 }}>
+                <Text style={styles.cellLabel}>Fin</Text>
+              </View>
+            </View>
+            <View style={[styles.cellLast, { width: '24%', justifyContent: 'space-around' }]}>
+              <View style={{ borderBottom: BORDER, paddingBottom: 4 }}>
                 <Text style={styles.cellValue}>{frDate(form.dateDebut)}</Text>
               </View>
-              <View style={{ flexDirection: 'row', paddingTop: 4 }}>
-                <Text style={[styles.cellLabel, { width: '30%' }]}>Fin</Text>
+              <View style={{ paddingTop: 4 }}>
                 <Text style={styles.cellValue}>{frDate(form.dateFin)}</Text>
               </View>
             </View>
@@ -401,26 +419,26 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
 
           {/* Demandé le / Responsable / Directeur */}
           <View style={[styles.row, { flex: 0.9 }]}>
-            <View style={[styles.grayCell, { width: '33.34%' }]}>
+            <View style={[styles.grayCell, { width: '29%' }]}>
               <Text style={styles.grayLabel}>Demandé le {today}</Text>
             </View>
-            <View style={[styles.grayCell, { width: '33.33%' }]}>
+            <View style={[styles.grayCell, { width: '36%' }]}>
               <Text style={styles.grayLabel}>Responsable du département</Text>
             </View>
-            <View style={[styles.grayCellLast, { width: '33.33%' }]}>
+            <View style={[styles.grayCellLast, { width: '35%' }]}>
               <Text style={styles.grayLabel}>Directeur</Text>
             </View>
           </View>
 
           {/* Signatures */}
           <View style={[styles.row, { flex: 3.5, borderBottom: 'none' }]}>
-            <View style={[styles.cell, { width: '33.34%', justifyContent: 'flex-start' }]}>
+            <View style={[styles.cell, { width: '29%', justifyContent: 'flex-start' }]}>
               <Text style={styles.cellLabel}>Demandeur : Ahmed Said</Text>
             </View>
-            <View style={[styles.cell, { width: '33.33%', justifyContent: 'flex-start' }]}>
+            <View style={[styles.cell, { width: '36%', justifyContent: 'flex-start' }]}>
               <Text style={styles.cellLabel}>Validé par : Jordy FEUILLAS</Text>
             </View>
-            <View style={[styles.cellLast, { width: '33.33%', justifyContent: 'flex-start' }]}>
+            <View style={[styles.cellLast, { width: '35%', justifyContent: 'flex-start' }]}>
               <Text style={styles.cellLabel}>Ingénieur Général : AUCOUTURIER</Text>
             </View>
           </View>
