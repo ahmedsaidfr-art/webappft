@@ -91,7 +91,7 @@ export function FormScreen({
   const [ctaState, setCtaState] = useState<'idle' | 'loading' | 'success'>('idle');
   const [devisFile, setDevisFile] = useState<File | null>(initialDevisFile);
   const devisInputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<{ url: string; blob: Blob; filename: string } | null>(null);
+  const [preview, setPreview] = useState<{ url: string; blob: Blob; filename: string; pageCount: number; devisMerged: boolean } | null>(null);
   const [downloadDone, setDownloadDone] = useState(false);
 
   const today = new Date().toLocaleDateString('fr-FR');
@@ -172,9 +172,12 @@ export function FormScreen({
     setCtaState('loading');
     try {
       const ficheBlob = await generateFichePdfBlob(form, today);
-      const blob = await mergeWithDevis(ficheBlob, devisFile);
+      const { blob, pageCount, devisMerged } = await mergeWithDevis(ficheBlob, devisFile);
       const filename = `Fiche-travaux-${form.numDevis || 'sans-devis'}.pdf`;
-      setPreview({ url: URL.createObjectURL(blob), blob, filename });
+      setPreview({ url: URL.createObjectURL(blob), blob, filename, pageCount, devisMerged });
+      if (devisFile && !devisMerged) {
+        setToast({ msg: "Le devis n'a pas pu être fusionné (fichier invalide), seule la fiche a été générée", type: 'error' });
+      }
       setCtaState('idle');
     } catch {
       setCtaState('idle');
@@ -794,7 +797,14 @@ export function FormScreen({
 
       {/* PDF Preview */}
       {preview && (
-        <PdfPreviewSheet url={preview.url} filename={preview.filename} onDownload={handleDownload} onClose={closePreview} />
+        <PdfPreviewSheet
+          url={preview.url}
+          filename={preview.filename}
+          pageCount={preview.pageCount}
+          hasDevis={!!devisFile && preview.devisMerged}
+          onDownload={handleDownload}
+          onClose={closePreview}
+        />
       )}
 
       {/* Download done */}

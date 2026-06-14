@@ -6,11 +6,13 @@ import { Icon } from '@/components/icon';
 interface PdfPreviewSheetProps {
   url: string;
   filename: string;
+  pageCount: number;
+  hasDevis: boolean;
   onDownload: () => void;
   onClose: () => void;
 }
 
-export function PdfPreviewSheet({ url, filename, onDownload, onClose }: PdfPreviewSheetProps) {
+export function PdfPreviewSheet({ url, filename, pageCount, hasDevis, onDownload, onClose }: PdfPreviewSheetProps) {
   const [mounted, setMounted] = useState(false);
   const [closing, setClosing] = useState(false);
 
@@ -29,7 +31,12 @@ export function PdfPreviewSheet({ url, filename, onDownload, onClose }: PdfPrevi
       <div className="sheet sheet--full" onClick={(e) => e.stopPropagation()}>
         <div className="sheet__grab" />
         <div className="sheet__head">
-          <h2>Aperçu du PDF</h2>
+          <div>
+            <h2>Aperçu du PDF</h2>
+            <p style={{ margin: '2px 0 0', fontSize: 12.5, color: 'var(--text-2)' }}>
+              {pageCount} page{pageCount > 1 ? 's' : ''} · {hasDevis ? 'Fiche travaux + devis joint' : 'Fiche travaux uniquement'}
+            </p>
+          </div>
           <button className="sheet__close" onClick={dismiss}>
             <Icon name="x" size={16} />
           </button>
