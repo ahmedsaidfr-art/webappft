@@ -385,7 +385,7 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
 
           {/* TVA / Délai */}
           <View style={[styles.row, { flex: 2.2 }]}>
-            <View style={[styles.grayCell, { width: '13%' }]}>
+            <View style={[styles.grayCell, { width: '14%' }]}>
               <Text style={styles.grayLabelLeft}>Taux de TVA applicable :</Text>
             </View>
             <View style={[styles.grayCell, { width: '15%', justifyContent: 'space-around' }]}>
@@ -399,7 +399,7 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
             <View style={[styles.grayCell, { width: '36%', alignItems: 'center' }]}>
               <Text style={[styles.cellLabel, { textAlign: 'center' }]}>Délai d&apos;exécution de l&apos;opération</Text>
             </View>
-            <View style={[styles.grayCell, { width: '12%', justifyContent: 'space-around' }]}>
+            <View style={[styles.grayCell, { width: '11%', justifyContent: 'space-around' }]}>
               <View style={{ borderBottom: BORDER, paddingBottom: 4 }}>
                 <Text style={styles.cellLabel}>Début</Text>
               </View>
