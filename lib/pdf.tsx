@@ -388,31 +388,35 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
             <View style={[styles.grayCell, { width: '14%' }]}>
               <Text style={styles.grayLabelLeft}>Taux de TVA applicable :</Text>
             </View>
-            <View style={[styles.grayCell, { width: '15%', justifyContent: 'space-around' }]}>
-              <View style={{ borderBottom: BORDER, paddingBottom: 4 }}>
+            <View style={[styles.grayCell, { width: '15%', padding: 0 }]}>
+              <View style={{ flex: 1, borderBottom: BORDER, justifyContent: 'center', paddingLeft: 4 }}>
                 <Checkbox checked={form.tva === '10'} label="10,00%" />
               </View>
-              <View style={{ paddingTop: 4 }}>
+              <View style={{ flex: 1, justifyContent: 'center', paddingLeft: 4 }}>
                 <Checkbox checked={form.tva === '20'} label="20,00%" />
               </View>
             </View>
             <View style={[styles.grayCell, { width: '36%', alignItems: 'center' }]}>
               <Text style={[styles.cellLabel, { textAlign: 'center' }]}>Délai d&apos;exécution de l&apos;opération</Text>
             </View>
-            <View style={[styles.grayCell, { width: '11%', justifyContent: 'space-around' }]}>
-              <View style={{ borderBottom: BORDER, paddingBottom: 4 }}>
+            <View style={[styles.grayCell, { width: '11%', padding: 0 }]}>
+              <View style={{ flex: 1, borderBottom: BORDER, justifyContent: 'center', paddingLeft: 4 }}>
                 <Text style={styles.cellLabel}>Début</Text>
               </View>
-              <View style={{ paddingTop: 4 }}>
+              <View style={{ flex: 1, justifyContent: 'center', paddingLeft: 4 }}>
                 <Text style={styles.cellLabel}>Fin</Text>
               </View>
             </View>
-            <View style={[styles.cellLast, { width: '24%', justifyContent: 'space-around' }]}>
-              <View style={{ borderBottom: BORDER, paddingBottom: 4 }}>
-                <Text style={styles.cellValue}>{frDate(form.dateDebut)}</Text>
+            <View style={[styles.cellLast, { width: '24%', padding: 0 }]}>
+              <View style={{ flex: 1, borderBottom: BORDER, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={[styles.cellValue, { fontFamily: 'Helvetica-Bold', textAlign: 'center', marginTop: 0 }]}>
+                  {frDate(form.dateDebut)}
+                </Text>
               </View>
-              <View style={{ paddingTop: 4 }}>
-                <Text style={styles.cellValue}>{frDate(form.dateFin)}</Text>
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={[styles.cellValue, { fontFamily: 'Helvetica-Bold', textAlign: 'center', marginTop: 0 }]}>
+                  {frDate(form.dateFin)}
+                </Text>
               </View>
             </View>
           </View>
