@@ -381,10 +381,16 @@ export function FormScreen({
             isComplete={isComplete('nature')}
             hasError={hasErr('nature')}
           >
-            <Field label="Description" required error={submitted && errors.natureTravaux}>
+            <Field
+              label="Description"
+              required
+              error={submitted && errors.natureTravaux}
+              hint={`${form.natureTravaux.length}/130 caractères`}
+            >
               <input
                 className={`input${submitted && errors.natureTravaux ? ' has-error' : ''}`}
                 value={form.natureTravaux}
+                maxLength={130}
                 onChange={(e) => {
                   set('natureTravaux', e.target.value);
                   clearErr('natureTravaux');

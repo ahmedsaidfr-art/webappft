@@ -14,7 +14,10 @@ const RESPONSE_SCHEMA = {
     taux_tva: { type: 'STRING', description: 'Taux de TVA en pourcentage, par exemple "20"' },
     date_debut: { type: 'STRING', description: "Date de début des travaux au format AAAA-MM-JJ" },
     date_fin: { type: 'STRING', description: "Date de fin des travaux au format AAAA-MM-JJ" },
-    description_travaux: { type: 'STRING', description: 'Description / nature des travaux' },
+    description_travaux: {
+      type: 'STRING',
+      description: 'Description / nature des travaux, 130 caractères maximum',
+    },
     batiment_numero: { type: 'STRING', description: 'Numéro du bâtiment concerné, si mentionné' },
   },
 };
@@ -23,7 +26,8 @@ const PROMPT = `Tu es un assistant qui extrait les informations clés d'un devis
 Analyse le document fourni et retourne un objet JSON correspondant au schéma demandé.
 Si une information est absente du devis, laisse le champ vide (chaîne vide).
 Les montants doivent être au format français avec une virgule pour les décimales et un espace comme séparateur de milliers (ex: "1 283,48").
-Les dates doivent être au format AAAA-MM-JJ.`;
+Les dates doivent être au format AAAA-MM-JJ.
+La description des travaux (description_travaux) ne doit jamais dépasser 130 caractères : résume-la si nécessaire pour respecter cette limite.`;
 
 /**
  * POST /api/extract-devis
