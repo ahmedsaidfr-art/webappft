@@ -98,6 +98,10 @@ const styles = StyleSheet.create({
     fontSize: 8,
     textAlign: 'center',
   },
+  grayLabelLeft: {
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 8,
+  },
   centerValue: {
     fontSize: 8,
     textAlign: 'center',
@@ -169,16 +173,16 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
         <View style={styles.table}>
           {/* Nature des travaux / Numéro du marché */}
           <View style={[styles.row, { flex: 1.1 }]}>
-            <View style={[styles.cell, { width: '13%' }]}>
-              <Text style={styles.cellLabel}>Nature des travaux</Text>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabelLeft}>Nature des travaux</Text>
             </View>
             <View style={[styles.cell, { width: '57%', alignItems: 'center' }]}>
               <Text style={[styles.cellValue, { fontFamily: 'Helvetica-Bold', textAlign: 'center', marginTop: 0 }]}>
                 {form.natureTravaux || '—'}
               </Text>
             </View>
-            <View style={[styles.cell, { width: '13%' }]}>
-              <Text style={styles.cellLabel}>Numéro du marché</Text>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabelLeft}>Numéro du marché</Text>
             </View>
             <View style={[styles.cellLast, { width: '17%' }]}>
               <Text style={styles.cellValue}>{form.marche?.numero || ''}</Text>
@@ -207,14 +211,14 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
 
           {/* OPE / GER */}
           <View style={styles.row}>
-            <View style={[styles.cell, { width: '13%' }]}>
-              <Text style={styles.cellLabel}>OPE</Text>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabelLeft}>OPE</Text>
             </View>
             <View style={[styles.cell, { width: '37%' }]}>
               <Text style={styles.cellValue}>{form.ope ? `${form.ope.code} — ${form.ope.libelle}` : ''}</Text>
             </View>
-            <View style={[styles.cell, { width: '13%' }]}>
-              <Text style={styles.cellLabel}>GER</Text>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabelLeft}>GER</Text>
             </View>
             <View style={[styles.cellLast, { width: '37%' }]}>
               <Text style={styles.cellValue}>{form.ger ? `${form.ger.code} — ${form.ger.libelle}` : ''}</Text>
@@ -223,14 +227,14 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
 
           {/* PTR / Services */}
           <View style={styles.row}>
-            <View style={[styles.cell, { width: '13%' }]}>
-              <Text style={styles.cellLabel}>PTR</Text>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabelLeft}>PTR</Text>
             </View>
             <View style={[styles.cell, { width: '37%' }]}>
               <Text style={styles.cellValue}>{form.ptr ? `${form.ptr.code} — ${form.ptr.libelle}` : ''}</Text>
             </View>
-            <View style={[styles.cell, { width: '13%' }]}>
-              <Text style={styles.cellLabel}>Services</Text>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabelLeft}>Services</Text>
             </View>
             <View style={[styles.cellLast, { width: '37%' }]}>
               <Text style={styles.cellValue}></Text>
@@ -239,14 +243,14 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
 
           {/* Mecenat / Prestation intellectuelle */}
           <View style={[styles.row, { flex: 1.4 }]}>
-            <View style={[styles.cell, { width: '13%' }]}>
-              <Text style={styles.cellLabel}>Mecenat</Text>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabelLeft}>Mecenat</Text>
             </View>
             <View style={[styles.cell, { width: '37%' }]}>
               <Text style={styles.cellValue}></Text>
             </View>
-            <View style={[styles.cell, { width: '13%' }]}>
-              <Text style={styles.cellLabel}>Prestation intellectuelle{'\n'}(hors travaux)</Text>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabelLeft}>Prestation intellectuelle{'\n'}(hors travaux)</Text>
             </View>
             <View style={[styles.cellLast, { width: '37%' }]}>
               <Text style={styles.cellValue}></Text>
@@ -255,8 +259,8 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
 
           {/* Rattachement / Maintenance */}
           <View style={[styles.row, { flex: 1.4 }]}>
-            <View style={[styles.cell, { width: '25%' }]}>
-              <Text style={styles.cellLabel}>Rattachement à un marché d&apos;entretien</Text>
+            <View style={[styles.grayCell, { width: '25%' }]}>
+              <Text style={styles.grayLabelLeft}>Rattachement à un marché d&apos;entretien</Text>
             </View>
             <View style={[styles.cell, { width: '10%', alignItems: 'center' }]}>
               <Checkbox checked={form.rattachement === 'Oui'} label="Oui" />
@@ -264,8 +268,8 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
             <View style={[styles.cell, { width: '10%', alignItems: 'center' }]}>
               <Checkbox checked={form.rattachement === 'Non'} label="Non" />
             </View>
-            <View style={[styles.cell, { width: '13%' }]}>
-              <Text style={styles.cellLabel}>Maintenance</Text>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabelLeft}>Maintenance</Text>
             </View>
             <View style={[styles.cellLast, { width: '42%' }]}>
               <Text style={styles.cellValue}></Text>
@@ -274,16 +278,16 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
 
           {/* Budget / UF */}
           <View style={[styles.row, { flex: 1.4 }]}>
-            <View style={[styles.cell, { width: '10%' }]}>
-              <Text style={styles.cellLabel}>Budget</Text>
+            <View style={[styles.grayCell, { width: '10%' }]}>
+              <Text style={styles.grayLabelLeft}>Budget</Text>
             </View>
             {['H', 'Annexe B', 'Annexe C', 'Annexe E', 'Annexe P'].map((opt) => (
               <View key={opt} style={[styles.cell, { width: '12%', alignItems: 'center' }]}>
                 <Checkbox checked={form.budget.includes(opt)} label={opt} />
               </View>
             ))}
-            <View style={[styles.cell, { width: '8%' }]}>
-              <Text style={styles.cellLabel}>UF</Text>
+            <View style={[styles.grayCell, { width: '8%' }]}>
+              <Text style={styles.grayLabelLeft}>UF</Text>
             </View>
             <View style={[styles.cellLast, { width: '14%' }]}>
               <Text style={styles.cellValue}>{form.uf}</Text>
@@ -292,14 +296,14 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
 
           {/* Compte Cl2 / Compte Cl6 */}
           <View style={styles.row}>
-            <View style={[styles.cell, { width: '13%' }]}>
-              <Text style={styles.cellLabel}>Compte Cl2</Text>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabelLeft}>Compte Cl2</Text>
             </View>
             <View style={[styles.cell, { width: '37%' }]}>
               <Text style={styles.cellValue}>{form.compteCl2}</Text>
             </View>
-            <View style={[styles.cell, { width: '13%' }]}>
-              <Text style={styles.cellLabel}>Compte Cl6</Text>
+            <View style={[styles.grayCell, { width: '13%' }]}>
+              <Text style={styles.grayLabelLeft}>Compte Cl6</Text>
             </View>
             <View style={[styles.cellLast, { width: '37%' }]}>
               <Text style={styles.cellValue}>{form.compteCl6}</Text>
@@ -374,8 +378,8 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
 
           {/* TVA / Délai */}
           <View style={[styles.row, { flex: 2.2 }]}>
-            <View style={[styles.cell, { width: '25%' }]}>
-              <Text style={styles.cellLabel}>Taux de TVA applicable :</Text>
+            <View style={[styles.grayCell, { width: '25%' }]}>
+              <Text style={styles.grayLabelLeft}>Taux de TVA applicable :</Text>
               <Checkbox checked={form.tva === '10'} label="10,00%" />
               <Checkbox checked={form.tva === '20'} label="20,00%" />
             </View>

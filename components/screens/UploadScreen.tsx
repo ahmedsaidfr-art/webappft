@@ -196,11 +196,8 @@ export function UploadScreen({ onComplete, onBack, batiments, entreprises, setEn
                     }}
                   />
                 </div>
-                <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--accent-ink)', marginBottom: 6 }}>
+                <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--accent-ink)', marginBottom: 20 }}>
                   Extraction en cours…
-                </div>
-                <div style={{ fontSize: 14, color: 'var(--text-2)', marginBottom: 20 }}>
-                  Analyse du devis SERSI SYSTÈME
                 </div>
                 {STEPS.map((step, i) => {
                   const done = doneSteps.includes(i);
