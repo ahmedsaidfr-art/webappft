@@ -429,21 +429,37 @@ export async function generateFichePdfBlob(form: FormData, today: string): Promi
   return pdf(<FichePdfDoc form={form} today={today} />).toBlob();
 }
 
-export async function mergeWithDevis(ficheBlob: Blob, devisFile: File | null): Promise<Blob> {
-  if (!devisFile) return ficheBlob;
+export interface MergeResult {
+  blob: Blob;
+  pageCount: number;
+  devisMerged: boolean;
+}
 
+export async function mergeWithDevis(ficheBlob: Blob, devisFile: File | null): Promise<MergeResult> {
   const merged = await PDFDocument.create();
 
   const ficheDoc = await PDFDocument.load(await ficheBlob.arrayBuffer());
   const fichePages = await merged.copyPages(ficheDoc, ficheDoc.getPageIndices());
   fichePages.forEach((page) => merged.addPage(page));
 
-  const devisDoc = await PDFDocument.load(await devisFile.arrayBuffer(), { ignoreEncryption: true });
-  const devisPages = await merged.copyPages(devisDoc, devisDoc.getPageIndices());
-  devisPages.forEach((page) => merged.addPage(page));
+  let devisMerged = false;
+  if (devisFile) {
+    try {
+      const devisDoc = await PDFDocument.load(await devisFile.arrayBuffer(), { ignoreEncryption: true });
+      const devisPages = await merged.copyPages(devisDoc, devisDoc.getPageIndices());
+      devisPages.forEach((page) => merged.addPage(page));
+      devisMerged = true;
+    } catch {
+      devisMerged = false;
+    }
+  }
 
   const bytes = await merged.save();
-  return new Blob([new Uint8Array(bytes)], { type: 'application/pdf' });
+  return {
+    blob: new Blob([new Uint8Array(bytes)], { type: 'application/pdf' }),
+    pageCount: merged.getPageCount(),
+    devisMerged,
+  };
 }
 
 export async function isValidPdf(file: File): Promise<boolean> {
