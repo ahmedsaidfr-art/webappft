@@ -112,6 +112,7 @@ function App() {
             setPoles={data.setPoles}
             utilisateurs={data.utilisateurs}
             setUtilisateurs={data.setUtilisateurs}
+            syncStatus={data.syncStatus}
             onBack={handleBack}
           />
         )}

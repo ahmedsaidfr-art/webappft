@@ -13,7 +13,6 @@ import { PdfPreviewSheet } from '@/components/ui/PdfPreviewSheet';
 import { DownloadDoneSheet } from '@/components/ui/DownloadDoneSheet';
 import { Toast, type ToastData } from '@/components/ui/Toast';
 import { parseAmount, formatAmount, sanitizeAmountInput } from '@/lib/format';
-import { generateFichePdfBlob, mergeWithDevis, downloadBlob, isValidPdf } from '@/lib/pdf';
 import { BUDGET_OPTIONS } from '@/lib/data';
 import { emptyFormData } from '@/lib/types';
 import type {
@@ -84,11 +83,17 @@ export function FormScreen({
   currentUser,
   onBack,
 }: FormScreenProps) {
-  const [form, setFormState] = useState<FormData>(() => ({
-    ...emptyFormData,
-    demandeur: currentUser ? `${currentUser.prenom} ${currentUser.nom}` : '',
-    ...initialData,
-  }));
+  const [form, setFormState] = useState<FormData>(() => {
+    const storedValidePar = currentUser
+      ? (window.localStorage.getItem(`webappft_valide_par_${currentUser.id}`) as ValidePar | null)
+      : null;
+    return {
+      ...emptyFormData,
+      demandeur: currentUser ? `${currentUser.prenom} ${currentUser.nom}` : '',
+      validePar: storedValidePar || emptyFormData.validePar,
+      ...initialData,
+    };
+  });
   const [openSections, setOpenSections] = useState<Set<string>>(
     new Set(['nature', 'marche', 'batiment', 'montants'])
   );
@@ -185,6 +190,7 @@ export function FormScreen({
     if (!validate()) return;
     setCtaState('loading');
     try {
+      const { generateFichePdfBlob, mergeWithDevis } = await import('@/lib/pdf');
       const ficheBlob = await generateFichePdfBlob(form, today);
       const { blob, pageCount, devisMerged } = await mergeWithDevis(ficheBlob, devisFile);
       const filename = `Fiche-travaux-${form.numDevis || 'sans-devis'}.pdf`;
@@ -203,8 +209,9 @@ export function FormScreen({
     setPreview(null);
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!preview) return;
+    const { downloadBlob } = await import('@/lib/pdf');
     downloadBlob(preview.blob, preview.filename);
     setCtaState('success');
     setToast({ msg: 'PDF téléchargé avec succès !', type: 'success' });
@@ -230,6 +237,7 @@ export function FormScreen({
 
   const handleDevisFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
+    const { isValidPdf } = await import('@/lib/pdf');
     if (file && !(await isValidPdf(file))) {
       setToast({ msg: 'Le fichier sélectionné n\'est pas un PDF valide', type: 'error' });
       if (devisInputRef.current) devisInputRef.current.value = '';
@@ -374,7 +382,10 @@ export function FormScreen({
                     { value: 'Jordy FEUILLAS', label: 'Jordy FEUILLAS' },
                   ]}
                   value={form.validePar}
-                  onChange={(v) => set('validePar', v)}
+                  onChange={(v) => {
+                    set('validePar', v);
+                    if (currentUser) window.localStorage.setItem(`webappft_valide_par_${currentUser.id}`, v);
+                  }}
                 />
               </div>
               {(

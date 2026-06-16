@@ -19,6 +19,7 @@ interface SearchSheetProps<T extends { id: number }> {
   addFields: AddField[];
   addLabel: string;
   onClose: () => void;
+  uniqueKey?: keyof T;
 }
 
 export function SearchSheet<T extends { id: number }>({
@@ -31,12 +32,14 @@ export function SearchSheet<T extends { id: number }>({
   addFields,
   addLabel,
   onClose,
+  uniqueKey,
 }: SearchSheetProps<T>) {
   const [q, setQ] = useState('');
   const [phase, setPhase] = useState<'list' | 'form' | 'confirm'>('list');
   const [newEntry, setNewEntry] = useState<Record<string, string>>(() =>
     Object.fromEntries(addFields.map((f) => [f.key, '']))
   );
+  const [duplicateError, setDuplicateError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [closing, setClosing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -68,6 +71,11 @@ export function SearchSheet<T extends { id: number }>({
 
   const handleConfirm = () => {
     const entry = { ...newEntry, id: Date.now() } as unknown as T;
+    if (uniqueKey && items.some((i) => String(i[uniqueKey]).toLowerCase() === String(entry[uniqueKey]).toLowerCase())) {
+      setDuplicateError('Une entrée avec cette valeur existe déjà.');
+      setPhase('form');
+      return;
+    }
     onAddItem(entry);
     onSelect(entry);
     onClose();
@@ -78,7 +86,7 @@ export function SearchSheet<T extends { id: number }>({
       className={`sheet-scrim${mounted && !closing ? ' is-in' : ''}${closing ? ' is-out' : ''}`}
       onClick={dismiss}
     >
-      <div className="sheet" onClick={(e) => e.stopPropagation()}>
+      <div className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <div className="sheet__grab" />
         <div className="sheet__head">
           <h2>{title}</h2>
@@ -129,13 +137,19 @@ export function SearchSheet<T extends { id: number }>({
             <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 700, color: 'var(--accent-ink)' }}>
               Nouvelle entrée
             </h3>
+            {duplicateError && (
+              <div style={{ color: 'var(--red)', fontSize: 13, fontWeight: 600, marginBottom: 12 }}>{duplicateError}</div>
+            )}
             {addFields.map((f) => (
               <div key={f.key} className="field">
                 <label className="label">{f.label}</label>
                 <input
                   className="input"
                   value={newEntry[f.key]}
-                  onChange={(e) => setNewEntry((p) => ({ ...p, [f.key]: e.target.value }))}
+                  onChange={(e) => {
+                    setNewEntry((p) => ({ ...p, [f.key]: e.target.value }));
+                    setDuplicateError(null);
+                  }}
                   placeholder={f.placeholder}
                 />
               </div>

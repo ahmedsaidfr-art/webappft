@@ -25,6 +25,11 @@ const utilisateurAddFields: AddField[] = [
   { key: 'email', label: 'Email', placeholder: 'prenom.nom@ghu-paris.fr' },
 ];
 
+function initials(nomComplet: string): string {
+  const parts = nomComplet.trim().split(/\s+/);
+  return parts.slice(0, 2).map((p) => p[0]?.toUpperCase() ?? '').join('');
+}
+
 function ModeCard({
   onClick,
   accent,
@@ -32,6 +37,7 @@ function ModeCard({
   title,
   desc,
   badge,
+  disabled,
 }: {
   onClick: () => void;
   accent: 'blue' | 'green';
@@ -39,6 +45,7 @@ function ModeCard({
   title: string;
   desc: string;
   badge?: string | null;
+  disabled?: boolean;
 }) {
   const ink = accent === 'blue' ? 'var(--accent-ink)' : 'var(--green-ink)';
   const soft = accent === 'blue' ? 'var(--accent-soft)' : 'var(--green-soft)';
@@ -47,6 +54,7 @@ function ModeCard({
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       className="mode-card"
       style={{
         width: '100%',
@@ -54,7 +62,8 @@ function ModeCard({
         borderRadius: 'var(--radius-lg)',
         border: `1.5px solid ${border}`,
         background: 'var(--surface)',
-        cursor: 'pointer',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.5 : 1,
         textAlign: 'left',
         boxShadow: 'var(--shadow-1)',
         display: 'flex',
@@ -153,14 +162,40 @@ export function HomeScreen({ onSelect, onAdmin, utilisateurs, setUtilisateurs, c
           Utilisateur
         </div>
 
-        <div style={{ marginBottom: 6 }}>
-          <SelectBtn
-            value={currentUser?.nomComplet || ''}
-            placeholder="Sélectionner un utilisateur…"
-            onClick={() => setUserSheetOpen(true)}
-            onClear={() => setCurrentUser(null)}
-          />
+        <div style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 10 }}>
+          {currentUser && (
+            <div
+              style={{
+                width: 36,
+                height: 36,
+                flexShrink: 0,
+                borderRadius: '50%',
+                background: 'var(--accent-soft)',
+                color: 'var(--accent-ink)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800,
+                fontSize: 13,
+              }}
+            >
+              {initials(currentUser.nomComplet)}
+            </div>
+          )}
+          <div style={{ flex: 1 }}>
+            <SelectBtn
+              value={currentUser?.nomComplet || ''}
+              placeholder="Sélectionner un utilisateur…"
+              onClick={() => setUserSheetOpen(true)}
+              onClear={() => setCurrentUser(null)}
+            />
+          </div>
         </div>
+        {!currentUser && (
+          <div style={{ fontSize: 12.5, color: 'var(--text-3)', paddingLeft: 2, marginBottom: 4 }}>
+            Sélectionnez un utilisateur pour créer un document.
+          </div>
+        )}
 
         <div
           style={{
@@ -185,6 +220,7 @@ export function HomeScreen({ onSelect, onAdmin, utilisateurs, setUtilisateurs, c
             title="Mode Intelligent"
             badge="RECOMMANDÉ"
             desc="Uploadez le devis PDF — l'IA extrait automatiquement l'entreprise, les montants, le bâtiment et les dates."
+            disabled={!currentUser}
           />
         )}
 
@@ -195,6 +231,7 @@ export function HomeScreen({ onSelect, onAdmin, utilisateurs, setUtilisateurs, c
           title="Mode Manuel"
           badge={null}
           desc="Remplissez le formulaire manuellement. Listes déroulantes disponibles, aucune connexion IA requise."
+          disabled={!currentUser}
         />
 
         {isAdminUser && (
@@ -232,6 +269,7 @@ export function HomeScreen({ onSelect, onAdmin, utilisateurs, setUtilisateurs, c
           searchKeys={['nomComplet', 'nom', 'prenom', 'email']}
           addLabel="utilisateur"
           addFields={utilisateurAddFields}
+          uniqueKey="nomComplet"
           onAddItem={(item) => setUtilisateurs((p) => [...p, item])}
           onSelect={(item) => setCurrentUser(item)}
           onClose={() => setUserSheetOpen(false)}

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Icon } from '@/components/icon';
 import { AdminList } from '@/components/screens/AdminList';
 import type { Batiment, Entreprise, Identifiant, Marche, Pole, Utilisateur } from '@/lib/types';
+import type { SyncStatus } from '@/context/AppContext';
 
 type Tab = 'batiment' | 'entreprise' | 'marche' | 'ope' | 'ger' | 'ptr' | 'pole' | 'utilisateur';
 
@@ -24,8 +25,16 @@ interface AdminScreenProps {
   setPoles: React.Dispatch<React.SetStateAction<Pole[]>>;
   utilisateurs: Utilisateur[];
   setUtilisateurs: React.Dispatch<React.SetStateAction<Utilisateur[]>>;
+  syncStatus: SyncStatus;
   onBack: () => void;
 }
+
+const SYNC_LABEL: Record<SyncStatus, string> = {
+  idle: '',
+  syncing: 'Synchronisation…',
+  synced: '✓ Synchronisé',
+  error: 'Hors-ligne — modifications non synchronisées',
+};
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'batiment', label: 'Bâtiments' },
@@ -47,6 +56,7 @@ export function AdminScreen({
   ptrs, setPtrs,
   poles, setPoles,
   utilisateurs, setUtilisateurs,
+  syncStatus,
   onBack,
 }: AdminScreenProps) {
   const [tab, setTab] = useState<Tab>('batiment');
@@ -61,7 +71,14 @@ export function AdminScreen({
         <div className="hdr__logo">GHU</div>
         <div className="hdr__title">
           <h1>Administration</h1>
-          <p>DITMP · {today}</p>
+          <p>
+            DITMP · {today}
+            {SYNC_LABEL[syncStatus] && (
+              <span style={{ marginLeft: 8, color: syncStatus === 'error' ? 'var(--red)' : 'inherit' }}>
+                · {SYNC_LABEL[syncStatus]}
+              </span>
+            )}
+          </p>
         </div>
         <div className="hdr__badge is-manual">
           <Icon name="settings" size={14} />
@@ -222,6 +239,7 @@ export function AdminScreen({
               title="Utilisateurs"
               items={utilisateurs}
               setItems={setUtilisateurs}
+              uniqueKey="nomComplet"
               columns={[
                 { key: 'nom', label: 'Nom', placeholder: 'Ex: SAID' },
                 { key: 'prenom', label: 'Prénom', placeholder: 'Ex: Ahmed' },
