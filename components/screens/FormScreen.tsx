@@ -221,7 +221,14 @@ export function FormScreen({
   };
 
   const handleNewFiche = () => {
-    setFormState({ ...emptyFormData });
+    const storedValidePar = currentUser
+      ? (window.localStorage.getItem(`webappft_valide_par_${currentUser.id}`) as ValidePar | null)
+      : null;
+    setFormState({
+      ...emptyFormData,
+      demandeur: currentUser ? `${currentUser.prenom} ${currentUser.nom}` : '',
+      validePar: storedValidePar || emptyFormData.validePar,
+    });
     setDevisFile(null);
     if (devisInputRef.current) devisInputRef.current.value = '';
     setOpenSections(new Set(['nature', 'marche', 'batiment', 'montants']));
