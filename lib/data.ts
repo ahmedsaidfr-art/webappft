@@ -1,4 +1,36 @@
-import type { Batiment, Entreprise, Marche, Identifiant, Pole } from './types';
+import type { Batiment, Entreprise, Marche, Identifiant, Pole, Utilisateur } from './types';
+
+export const SEED_UTILISATEURS: Utilisateur[] = [
+  { id: 1, nom: 'FEUILLAS', prenom: 'Jordy', nomComplet: 'FEUILLAS Jordy', email: 'j.feuillas@ghu-paris.fr' },
+  { id: 2, nom: 'SAID', prenom: 'Ahmed', nomComplet: 'SAID Ahmed', email: 'ahmed.said@ghu-paris.fr' },
+  { id: 3, nom: 'GRISON', prenom: 'Jérémy', nomComplet: 'GRISON Jérémy', email: 'jeremy.grison@ghu-paris.fr' },
+  { id: 4, nom: 'BALLESTER', prenom: 'Luis', nomComplet: 'BALLESTER Luis', email: 'l.ballester@ghu-paris.fr' },
+  { id: 5, nom: 'NESIGBA', prenom: 'Alpha', nomComplet: 'NESIGBA Alpha', email: 'a.nesigba@ghu-paris.fr' },
+  { id: 6, nom: 'SIRI', prenom: 'Thierry', nomComplet: 'SIRI Thierry', email: 't.siri@ghu-paris.fr' },
+  { id: 7, nom: 'GUILLAUME', prenom: 'Marc', nomComplet: 'GUILLAUME Marc', email: 'marc.guillaume@ghu-paris.fr' },
+  { id: 8, nom: 'CLERGET', prenom: 'Baudouin', nomComplet: 'CLERGET Baudouin', email: 'b.clerget@ghu-paris.fr' },
+  { id: 9, nom: 'TOUATI', prenom: 'Madhi', nomComplet: 'TOUATI Madhi', email: 'm.touati@ghu-paris.fr' },
+  { id: 10, nom: 'VITTORI', prenom: 'Anthony', nomComplet: 'VITTORI Anthony', email: 'a.vittori@ghu-paris.fr' },
+  { id: 11, nom: 'VITTORI', prenom: 'Alexis', nomComplet: 'VITTORI Alexis', email: 'alexis.vittori@ghu-paris.fr' },
+  { id: 12, nom: 'DA SILVA', prenom: 'Georges', nomComplet: 'DA SILVA Georges', email: 'g.dasilva@ghu-paris.fr' },
+  { id: 13, nom: 'KIALA', prenom: 'Ralph', nomComplet: 'KIALA Ralph', email: 'r.kiala@ghu-paris.fr' },
+  { id: 14, nom: 'HORVAT', prenom: 'Adolphe', nomComplet: 'HORVAT Adolphe', email: 'a.horvat@ghu-paris.fr' },
+  { id: 15, nom: 'PLANO', prenom: 'Richard', nomComplet: 'PLANO Richard', email: 'r.plano@ghu-paris.fr' },
+  { id: 16, nom: 'LETOURNEUR', prenom: 'Olivier', nomComplet: 'LETOURNEUR Olivier', email: 'o.letourneur@ghu-paris.fr' },
+  { id: 17, nom: 'LE DEVEHAT', prenom: 'Yannick', nomComplet: 'LE DEVEHAT Yannick', email: 'y.le_devehat@ghu-paris.fr' },
+  { id: 18, nom: 'LAHOUAZI', prenom: 'Belkacem', nomComplet: 'LAHOUAZI Belkacem', email: 'b.lahouazi@ghu-paris.fr' },
+  { id: 19, nom: 'SAINT MARTIN', prenom: 'Eddy', nomComplet: 'SAINT MARTIN Eddy', email: 'e.saint_martin@ghu-paris.fr' },
+  { id: 20, nom: 'PUGIN', prenom: 'Hervé', nomComplet: 'PUGIN Hervé', email: 'h.pugin@ghu-paris.fr' },
+  { id: 21, nom: 'THEZENAS', prenom: 'Mehdy', nomComplet: 'THEZENAS Mehdy', email: 'm.thezenas@ghu-paris.fr' },
+  { id: 22, nom: 'GUICHARD', prenom: 'Pierre', nomComplet: 'GUICHARD Pierre', email: 'p.guichard@ghu-paris.fr' },
+  { id: 23, nom: 'TRAORE', prenom: 'KABA', nomComplet: 'TRAORE KABA', email: 'kaba-adama.traore@ghu-paris.fr' },
+  { id: 24, nom: 'ATLAN', prenom: 'DAVID', nomComplet: 'ATLAN DAVID', email: 'david.atlan@ghu-paris.fr' },
+  { id: 25, nom: 'GARNIER', prenom: 'Philippe', nomComplet: 'GARNIER Philippe', email: 'p.garnier@ghu-paris.fr' },
+  { id: 26, nom: 'BERTOLINO', prenom: 'Sarah', nomComplet: 'BERTOLINO Sarah', email: 'sarah.bertolino@ghu-paris.fr' },
+  { id: 27, nom: 'HADJAM', prenom: 'Kaoutar', nomComplet: 'HADJAM Kaoutar', email: 'khaoutar.hadjam@ghu-paris.fr' },
+  { id: 28, nom: 'DOUIRI', prenom: 'Hinda', nomComplet: 'DOUIRI Hinda', email: 'henda.douiri@ghu-paris.fr' },
+  { id: 29, nom: 'BONNEFOI', prenom: 'Alain', nomComplet: 'BONNEFOI Alain', email: 'bonnefoi@ghu-paris.fr' },
+];
 
 export const SEED_BATIMENTS: Batiment[] = [
   { id: 1, numero: '001', nom: 'BAT 1 (LOCAUX VIDES)', tva_defaut: '20' },

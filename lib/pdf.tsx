@@ -442,10 +442,10 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
           {/* Signatures */}
           <View style={[styles.row, { flex: 3.5, borderBottom: 'none' }]}>
             <View style={[styles.cell, { width: '29%', justifyContent: 'flex-start' }]}>
-              <Text style={styles.cellLabel}>Demandeur : Ahmed Said</Text>
+              <Text style={styles.cellLabel}>Demandeur : {form.demandeur}</Text>
             </View>
             <View style={[styles.cell, { width: '36%', justifyContent: 'flex-start' }]}>
-              <Text style={styles.cellLabel}>Validé par : Jordy FEUILLAS</Text>
+              <Text style={styles.cellLabel}>Validé par : {form.validePar}</Text>
             </View>
             <View style={[styles.cellLast, { width: '35%', justifyContent: 'flex-start' }]}>
               <Text style={styles.cellLabel}>Ingénieur Général : AUCOUTURIER</Text>
