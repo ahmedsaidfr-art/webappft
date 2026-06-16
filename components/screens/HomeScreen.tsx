@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { Icon, type IconName } from '@/components/icon';
+import { SelectBtn } from '@/components/widgets/SelectBtn';
+import { SearchSheet, type AddField } from '@/components/ui/SearchSheet';
 import type { Mode, Utilisateur } from '@/lib/types';
 
 const ADMIN_USER_NOM_COMPLET = 'SAID Ahmed';
@@ -10,9 +13,17 @@ interface HomeScreenProps {
   onSelect: (mode: Mode) => void;
   onAdmin: () => void;
   utilisateurs: Utilisateur[];
+  setUtilisateurs: React.Dispatch<React.SetStateAction<Utilisateur[]>>;
   currentUser: Utilisateur | null;
   setCurrentUser: (user: Utilisateur | null) => void;
 }
+
+const utilisateurAddFields: AddField[] = [
+  { key: 'nom', label: 'Nom', placeholder: 'Ex: SAID' },
+  { key: 'prenom', label: 'Prénom', placeholder: 'Ex: Ahmed' },
+  { key: 'nomComplet', label: 'Nom complet', placeholder: 'Ex: SAID Ahmed' },
+  { key: 'email', label: 'Email', placeholder: 'prenom.nom@ghu-paris.fr' },
+];
 
 function ModeCard({
   onClick,
@@ -89,9 +100,10 @@ function ModeCard({
   );
 }
 
-export function HomeScreen({ onSelect, onAdmin, utilisateurs, currentUser, setCurrentUser }: HomeScreenProps) {
+export function HomeScreen({ onSelect, onAdmin, utilisateurs, setUtilisateurs, currentUser, setCurrentUser }: HomeScreenProps) {
   const today = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
   const isAdminUser = currentUser?.nomComplet === ADMIN_USER_NOM_COMPLET;
+  const [userSheetOpen, setUserSheetOpen] = useState(false);
   const sortedUsers = [...utilisateurs].sort((a, b) => a.nomComplet.localeCompare(b.nomComplet));
 
   return (
@@ -141,22 +153,14 @@ export function HomeScreen({ onSelect, onAdmin, utilisateurs, currentUser, setCu
           Utilisateur
         </div>
 
-        <select
-          value={currentUser?.id ?? ''}
-          onChange={(e) => {
-            const id = e.target.value;
-            setCurrentUser(id ? utilisateurs.find((u) => String(u.id) === id) ?? null : null);
-          }}
-          className="input"
-          style={{ marginBottom: 6 }}
-        >
-          <option value="">Sélectionner un utilisateur…</option>
-          {sortedUsers.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.nomComplet}
-            </option>
-          ))}
-        </select>
+        <div style={{ marginBottom: 6 }}>
+          <SelectBtn
+            value={currentUser?.nomComplet || ''}
+            placeholder="Sélectionner un utilisateur…"
+            onClick={() => setUserSheetOpen(true)}
+            onClear={() => setCurrentUser(null)}
+          />
+        </div>
 
         <div
           style={{
@@ -188,7 +192,7 @@ export function HomeScreen({ onSelect, onAdmin, utilisateurs, currentUser, setCu
           onClick={() => onSelect('simple')}
           accent="green"
           iconName="pencil"
-          title="Mode manuelle"
+          title="Mode Manuel"
           badge={null}
           desc="Remplissez le formulaire manuellement. Listes déroulantes disponibles, aucune connexion IA requise."
         />
@@ -220,6 +224,25 @@ export function HomeScreen({ onSelect, onAdmin, utilisateurs, currentUser, setCu
           </div>
         )}
       </div>
+
+      {userSheetOpen && (
+        <SearchSheet<Utilisateur>
+          title="Utilisateur"
+          items={sortedUsers}
+          searchKeys={['nomComplet', 'nom', 'prenom', 'email']}
+          addLabel="utilisateur"
+          addFields={utilisateurAddFields}
+          onAddItem={(item) => setUtilisateurs((p) => [...p, item])}
+          onSelect={(item) => setCurrentUser(item)}
+          onClose={() => setUserSheetOpen(false)}
+          renderRow={(item) => (
+            <div>
+              <div className="opt-row__t">{item.nomComplet}</div>
+              <div className="opt-row__s">{item.email}</div>
+            </div>
+          )}
+        />
+      )}
     </div>
   );
 }
