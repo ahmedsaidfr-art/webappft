@@ -32,7 +32,7 @@ export interface Pole {
 
 export type TypeTravaux = 'cl2' | 'cl6';
 export type Rattachement = 'Oui' | 'Non' | '';
-export type Tva = '10' | '20';
+export type Tva = '10' | '20' | 'multiple';
 
 export interface FormData {
   natureTravaux: string;
@@ -47,6 +47,7 @@ export interface FormData {
   totalHT: string;
   totalTTC: string;
   tva: Tva;
+  tvaAmount: string;
   dateDebut: string;
   dateFin: string;
   ope: Identifiant | null;
@@ -75,6 +76,7 @@ export const emptyFormData: FormData = {
   totalHT: '',
   totalTTC: '',
   tva: '20',
+  tvaAmount: '',
   dateDebut: '',
   dateFin: '',
   ope: null,

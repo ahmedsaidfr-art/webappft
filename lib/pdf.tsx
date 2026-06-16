@@ -384,7 +384,7 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
           </View>
 
           {/* TVA / Délai */}
-          <View style={[styles.row, { flex: 2.2 }]}>
+          <View style={[styles.row, { flex: 3.3 }]}>
             <View style={[styles.grayCell, { width: '14%' }]}>
               <Text style={styles.grayLabelLeft}>Taux de TVA applicable :</Text>
             </View>
@@ -392,8 +392,11 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
               <View style={{ flex: 1, borderBottom: BORDER, justifyContent: 'center', paddingLeft: 4 }}>
                 <Checkbox checked={form.tva === '10'} label="10,00%" />
               </View>
-              <View style={{ flex: 1, justifyContent: 'center', paddingLeft: 4 }}>
+              <View style={{ flex: 1, borderBottom: BORDER, justifyContent: 'center', paddingLeft: 4 }}>
                 <Checkbox checked={form.tva === '20'} label="20,00%" />
+              </View>
+              <View style={{ flex: 1, justifyContent: 'center', paddingLeft: 4 }}>
+                <Checkbox checked={form.tva === 'multiple'} label="TVA multiple" />
               </View>
             </View>
             <View style={[styles.grayCell, { width: '36%', alignItems: 'center' }]}>
@@ -403,9 +406,10 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
               <View style={{ flex: 1, borderBottom: BORDER, justifyContent: 'center', paddingLeft: 4 }}>
                 <Text style={styles.cellLabel}>Début</Text>
               </View>
-              <View style={{ flex: 1, justifyContent: 'center', paddingLeft: 4 }}>
+              <View style={{ flex: 1, borderBottom: BORDER, justifyContent: 'center', paddingLeft: 4 }}>
                 <Text style={styles.cellLabel}>Fin</Text>
               </View>
+              <View style={{ flex: 1 }} />
             </View>
             <View style={[styles.cellLast, { width: '24%', padding: 0 }]}>
               <View style={{ flex: 1, borderBottom: BORDER, justifyContent: 'center', alignItems: 'center' }}>
@@ -413,11 +417,12 @@ export function FichePdfDoc({ form, today }: FichePdfDocProps) {
                   {frDate(form.dateDebut)}
                 </Text>
               </View>
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <View style={{ flex: 1, borderBottom: BORDER, justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={[styles.cellValue, { fontFamily: 'Helvetica-Bold', textAlign: 'center', marginTop: 0 }]}>
                   {frDate(form.dateFin)}
                 </Text>
               </View>
+              <View style={{ flex: 1 }} />
             </View>
           </View>
 

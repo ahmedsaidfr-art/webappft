@@ -109,17 +109,23 @@ export function FormScreen({
     const v = sanitizeAmountInput(raw);
     const ht = parseAmount(v);
     const rate = parseFloat(form.tva) / 100;
-    setFormState((f) => ({ ...f, totalHT: v, totalTTC: !isNaN(ht) ? formatAmount(ht * (1 + rate)) : f.totalTTC }));
+    const autoTTC = form.tva !== 'multiple' && !isNaN(ht) ? formatAmount(ht * (1 + rate)) : undefined;
+    setFormState((f) => ({ ...f, totalHT: v, ...(autoTTC !== undefined ? { totalTTC: autoTTC } : {}) }));
   };
   const ttcChange = (raw: string) => {
     const v = sanitizeAmountInput(raw);
     const ttc = parseAmount(v);
     const rate = parseFloat(form.tva) / 100;
-    setFormState((f) => ({ ...f, totalTTC: v, totalHT: !isNaN(ttc) ? formatAmount(ttc / (1 + rate)) : f.totalHT }));
+    const autoHT = form.tva !== 'multiple' && !isNaN(ttc) ? formatAmount(ttc / (1 + rate)) : undefined;
+    setFormState((f) => ({ ...f, totalTTC: v, ...(autoHT !== undefined ? { totalHT: autoHT } : {}) }));
   };
-  const tvaChange = (v: '10' | '20') => {
+  const tvaChange = (v: '10' | '20' | 'multiple') => {
     const ht = parseAmount(form.totalHT);
-    setFormState((f) => ({ ...f, tva: v, totalTTC: !isNaN(ht) ? formatAmount(ht * (1 + parseFloat(v) / 100)) : f.totalTTC }));
+    if (v === 'multiple') {
+      setFormState((f) => ({ ...f, tva: v }));
+    } else {
+      setFormState((f) => ({ ...f, tva: v, tvaAmount: '', totalTTC: !isNaN(ht) ? formatAmount(ht * (1 + parseFloat(v) / 100)) : f.totalTTC }));
+    }
   };
 
   // ── Section helpers ──────────────────────────────────────────────────────
@@ -537,9 +543,21 @@ export function FormScreen({
                 options={[
                   { value: '10', label: '10%' },
                   { value: '20', label: '20%' },
+                  { value: 'multiple', label: 'TVA multiple' },
                 ]}
               />
             </Field>
+            {form.tva === 'multiple' && (
+              <Field label="Montant TVA" hint="Calcul automatique HT↔TTC désactivé">
+                <input
+                  className="input input--num"
+                  inputMode="decimal"
+                  value={form.tvaAmount}
+                  onChange={(e) => set('tvaAmount', sanitizeAmountInput(e.target.value))}
+                  placeholder="0,00"
+                />
+              </Field>
+            )}
             <div className="grid2">
               <Field label="Total HT" required error={submitted && errors.totalHT}>
                 <input
