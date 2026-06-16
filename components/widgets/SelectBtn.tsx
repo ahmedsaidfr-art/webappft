@@ -16,6 +16,10 @@ export function SelectBtn({ value, placeholder = 'Sélectionner…', subtitle, o
         className={`select-btn${value ? ' is-set' : ' is-empty'}${hasError ? ' has-error' : ''}`}
         onClick={onClick}
         type="button"
+        role="combobox"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-invalid={hasError || undefined}
       >
         <div className="select-btn__body">
           <div className="select-btn__value">{value || placeholder}</div>

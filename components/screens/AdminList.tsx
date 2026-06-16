@@ -22,6 +22,7 @@ interface AdminListProps<T extends AdminItem> {
   columns: AdminColumn[];
   newItemTemplate: Omit<T, 'id'>;
   renderRow: (item: T) => React.ReactNode;
+  uniqueKey?: string;
 }
 
 const inputSt: React.CSSProperties = {
@@ -37,7 +38,7 @@ const inputSt: React.CSSProperties = {
   boxSizing: 'border-box',
 };
 
-export function AdminList<T extends AdminItem>({ title, items, setItems, columns, newItemTemplate, renderRow }: AdminListProps<T>) {
+export function AdminList<T extends AdminItem>({ title, items, setItems, columns, newItemTemplate, renderRow, uniqueKey }: AdminListProps<T>) {
   const [adding, setAdding] = useState(false);
   const [newItem, setNewItem] = useState<Omit<T, 'id'>>(newItemTemplate);
   const [editId, setEditId] = useState<number | null>(null);
@@ -48,17 +49,32 @@ export function AdminList<T extends AdminItem>({ title, items, setItems, columns
     ? items.filter((i) => columns.some((c) => String(field(i, c.key) ?? '').toLowerCase().includes(q.toLowerCase())))
     : items;
 
+  const isDuplicate = (value: unknown, excludeId?: number) =>
+    !!uniqueKey &&
+    items.some((i) => i.id !== excludeId && String(field(i, uniqueKey)).toLowerCase() === String(value).toLowerCase());
+
   const saveNew = () => {
+    if (isDuplicate(field(newItem as object, uniqueKey || ''))) {
+      window.alert('Une entrée avec cette valeur existe déjà.');
+      return;
+    }
     setItems((p) => [...p, { ...newItem, id: Date.now() } as T]);
     setNewItem(newItemTemplate);
     setAdding(false);
   };
   const saveEdit = () => {
     if (!editItem) return;
+    if (isDuplicate(field(editItem, uniqueKey || ''), editId ?? undefined)) {
+      window.alert('Une entrée avec cette valeur existe déjà.');
+      return;
+    }
     setItems((p) => p.map((i) => (i.id === editId ? editItem : i)));
     setEditId(null);
   };
-  const del = (id: number) => setItems((p) => p.filter((i) => i.id !== id));
+  const del = (id: number) => {
+    if (!window.confirm('Supprimer cette entrée ? Cette action est irréversible.')) return;
+    setItems((p) => p.filter((i) => i.id !== id));
+  };
 
   const colGrid: React.CSSProperties = {
     display: 'grid',
