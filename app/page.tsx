@@ -53,6 +53,7 @@ function App() {
             onSelect={handleModeSelect}
             onAdmin={() => navigate('admin', undefined)}
             utilisateurs={data.utilisateurs}
+            setUtilisateurs={data.setUtilisateurs}
             currentUser={data.currentUser}
             setCurrentUser={data.setCurrentUser}
           />
