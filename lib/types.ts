@@ -30,9 +30,18 @@ export interface Pole {
   libelle: string;
 }
 
+export interface Utilisateur {
+  id: number;
+  nom: string;
+  prenom: string;
+  nomComplet: string;
+  email: string;
+}
+
 export type TypeTravaux = 'cl2' | 'cl6';
 export type Rattachement = 'Oui' | 'Non' | '';
 export type Tva = '10' | '20' | 'multiple';
+export type ValidePar = 'Ahmed SAID' | 'Jordy FEUILLAS' | '';
 
 export interface FormData {
   natureTravaux: string;
@@ -57,6 +66,8 @@ export interface FormData {
   uf: string;
   compteCl2: string;
   compteCl6: string;
+  demandeur: string;
+  validePar: ValidePar;
 }
 
 export type Mode = 'intelligent' | 'simple';
@@ -86,6 +97,8 @@ export const emptyFormData: FormData = {
   uf: '',
   compteCl2: '',
   compteCl6: '',
+  demandeur: '',
+  validePar: '',
 };
 
 export interface ExtractDevisResult {

@@ -2,11 +2,16 @@
 
 import Image from 'next/image';
 import { Icon, type IconName } from '@/components/icon';
-import type { Mode } from '@/lib/types';
+import type { Mode, Utilisateur } from '@/lib/types';
+
+const ADMIN_USER_NOM_COMPLET = 'SAID Ahmed';
 
 interface HomeScreenProps {
   onSelect: (mode: Mode) => void;
   onAdmin: () => void;
+  utilisateurs: Utilisateur[];
+  currentUser: Utilisateur | null;
+  setCurrentUser: (user: Utilisateur | null) => void;
 }
 
 function ModeCard({
@@ -84,8 +89,10 @@ function ModeCard({
   );
 }
 
-export function HomeScreen({ onSelect, onAdmin }: HomeScreenProps) {
+export function HomeScreen({ onSelect, onAdmin, utilisateurs, currentUser, setCurrentUser }: HomeScreenProps) {
   const today = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const isAdminUser = currentUser?.nomComplet === ADMIN_USER_NOM_COMPLET;
+  const sortedUsers = [...utilisateurs].sort((a, b) => a.nomComplet.localeCompare(b.nomComplet));
 
   return (
     <div className="scroll">
@@ -131,51 +138,87 @@ export function HomeScreen({ onSelect, onAdmin }: HomeScreenProps) {
             paddingLeft: 2,
           }}
         >
+          Utilisateur
+        </div>
+
+        <select
+          value={currentUser?.id ?? ''}
+          onChange={(e) => {
+            const id = e.target.value;
+            setCurrentUser(id ? utilisateurs.find((u) => String(u.id) === id) ?? null : null);
+          }}
+          className="input"
+          style={{ marginBottom: 6 }}
+        >
+          <option value="">Sélectionner un utilisateur…</option>
+          {sortedUsers.map((u) => (
+            <option key={u.id} value={u.id}>
+              {u.nomComplet}
+            </option>
+          ))}
+        </select>
+
+        <div
+          style={{
+            fontSize: 12,
+            fontWeight: 700,
+            color: 'var(--text-3)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.10em',
+            marginBottom: 4,
+            marginTop: 10,
+            paddingLeft: 2,
+          }}
+        >
           Nouveau document
         </div>
 
-        <ModeCard
-          onClick={() => onSelect('intelligent')}
-          accent="blue"
-          iconName="sparkles"
-          title="Mode Intelligent"
-          badge="RECOMMANDÉ"
-          desc="Uploadez le devis PDF — l'IA extrait automatiquement l'entreprise, les montants, le bâtiment et les dates."
-        />
+        {isAdminUser && (
+          <ModeCard
+            onClick={() => onSelect('intelligent')}
+            accent="blue"
+            iconName="sparkles"
+            title="Mode Intelligent"
+            badge="RECOMMANDÉ"
+            desc="Uploadez le devis PDF — l'IA extrait automatiquement l'entreprise, les montants, le bâtiment et les dates."
+          />
+        )}
 
         <ModeCard
           onClick={() => onSelect('simple')}
           accent="green"
           iconName="pencil"
-          title="Mode Simple"
+          title="Mode manuelle"
           badge={null}
           desc="Remplissez le formulaire manuellement. Listes déroulantes disponibles, aucune connexion IA requise."
         />
 
-        <div style={{ marginTop: 8, borderTop: '1px solid var(--hairline)', paddingTop: 14 }}>
-          <button
-            onClick={onAdmin}
-            className="admin-link"
-            style={{
-              width: '100%',
-              padding: '13px 16px',
-              borderRadius: 'var(--radius)',
-              border: '1px solid var(--border)',
-              background: 'var(--surface)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 11,
-              color: 'var(--text-2)',
-              fontFamily: 'var(--font-ui)',
-              transition: 'background .15s',
-            }}
-          >
-            <Icon name="settings" size={17} style={{ color: 'var(--text-3)' }} />
-            <span style={{ fontWeight: 600, fontSize: 14 }}>Administration des listes</span>
-            <Icon name="chevronRight" size={16} style={{ color: 'var(--text-3)', marginLeft: 'auto' }} />
-          </button>
-        </div>
+        {isAdminUser && (
+          <div style={{ marginTop: 8, borderTop: '1px solid var(--hairline)', paddingTop: 14 }}>
+            <button
+              onClick={onAdmin}
+              className="admin-link"
+              style={{
+                width: '100%',
+                padding: '13px 16px',
+                borderRadius: 'var(--radius)',
+                border: '1px solid var(--border)',
+                background: 'var(--surface)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 11,
+                color: 'var(--text-2)',
+                fontFamily: 'var(--font-ui)',
+                transition: 'background .15s',
+              }}
+            >
+              <Icon name="settings" size={17} style={{ color: 'var(--text-3)' }} />
+              <span style={{ fontWeight: 600, fontSize: 14 }}>Administration des listes</span>
+              <Icon name="chevronRight" size={16} style={{ color: 'var(--text-3)', marginLeft: 'auto' }} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -24,6 +24,8 @@ import type {
   Marche,
   Mode,
   Pole,
+  Utilisateur,
+  ValidePar,
 } from '@/lib/types';
 
 const SECTION_ERROR_MAP: Record<string, string> = {
@@ -64,6 +66,7 @@ interface FormScreenProps {
   setPtrs: React.Dispatch<React.SetStateAction<Identifiant[]>>;
   poles: Pole[];
   setPoles: React.Dispatch<React.SetStateAction<Pole[]>>;
+  currentUser: Utilisateur | null;
   onBack: () => void;
 }
 
@@ -78,9 +81,14 @@ export function FormScreen({
   gers, setGers,
   ptrs, setPtrs,
   poles, setPoles,
+  currentUser,
   onBack,
 }: FormScreenProps) {
-  const [form, setFormState] = useState<FormData>(() => ({ ...emptyFormData, ...initialData }));
+  const [form, setFormState] = useState<FormData>(() => ({
+    ...emptyFormData,
+    demandeur: currentUser ? `${currentUser.prenom} ${currentUser.nom}` : '',
+    ...initialData,
+  }));
   const [openSections, setOpenSections] = useState<Set<string>>(
     new Set(['nature', 'marche', 'batiment', 'montants'])
   );
@@ -354,10 +362,23 @@ export function FormScreen({
               <Icon name="info" size={13} /> Informations fixes
             </div>
             <div className="banneau__grid">
+              <div className="fixed-field">
+                <div className="k">Demandeur</div>
+                <div className="v">{form.demandeur || 'Non sélectionné'}</div>
+              </div>
+              <div className="fixed-field">
+                <div className="k">Validé par</div>
+                <Seg<NonNullable<ValidePar>>
+                  options={[
+                    { value: 'Ahmed SAID', label: 'Ahmed SAID' },
+                    { value: 'Jordy FEUILLAS', label: 'Jordy FEUILLAS' },
+                  ]}
+                  value={form.validePar}
+                  onChange={(v) => set('validePar', v)}
+                />
+              </div>
               {(
                 [
-                  ['Demandeur', 'Ahmed Said'],
-                  ['Validé par', 'Jordy FEUILLAS'],
                   ['IG', 'AUCOUTURIER'],
                   ['Demandé le', today],
                 ] as const

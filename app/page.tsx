@@ -48,7 +48,15 @@ function App() {
   return (
     <main className="screen">
       <div key={navKey} className={`screen-view screen-view--${navDir}`}>
-        {screen === 'home' && <HomeScreen onSelect={handleModeSelect} onAdmin={() => navigate('admin', undefined)} />}
+        {screen === 'home' && (
+          <HomeScreen
+            onSelect={handleModeSelect}
+            onAdmin={() => navigate('admin', undefined)}
+            utilisateurs={data.utilisateurs}
+            currentUser={data.currentUser}
+            setCurrentUser={data.setCurrentUser}
+          />
+        )}
 
         {screen === 'upload' && (
           <UploadScreen
@@ -80,6 +88,7 @@ function App() {
             setPtrs={data.setPtrs}
             poles={data.poles}
             setPoles={data.setPoles}
+            currentUser={data.currentUser}
             onBack={handleBack}
           />
         )}
@@ -100,6 +109,8 @@ function App() {
             setPtrs={data.setPtrs}
             poles={data.poles}
             setPoles={data.setPoles}
+            utilisateurs={data.utilisateurs}
+            setUtilisateurs={data.setUtilisateurs}
             onBack={handleBack}
           />
         )}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import type { Batiment, Entreprise, Marche, Identifiant, Pole } from '@/lib/types';
+import type { Batiment, Entreprise, Marche, Identifiant, Pole, Utilisateur } from '@/lib/types';
 import { supabase } from '@/lib/supabase';
 import {
   SEED_BATIMENTS,
@@ -11,7 +11,10 @@ import {
   SEED_GERS,
   SEED_PTRS,
   SEED_POLES,
+  SEED_UTILISATEURS,
 } from '@/lib/data';
+
+const CURRENT_USER_STORAGE_KEY = 'webappft_current_user_id';
 
 interface AppContextValue {
   batiments: Batiment[];
@@ -28,6 +31,10 @@ interface AppContextValue {
   setPtrs: React.Dispatch<React.SetStateAction<Identifiant[]>>;
   poles: Pole[];
   setPoles: React.Dispatch<React.SetStateAction<Pole[]>>;
+  utilisateurs: Utilisateur[];
+  setUtilisateurs: React.Dispatch<React.SetStateAction<Utilisateur[]>>;
+  currentUser: Utilisateur | null;
+  setCurrentUser: (user: Utilisateur | null) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -92,6 +99,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [gers, setGers] = useSupabaseCollection('webappft_gers', SEED_GERS);
   const [ptrs, setPtrs] = useSupabaseCollection('webappft_ptrs', SEED_PTRS);
   const [poles, setPoles] = useSupabaseCollection('webappft_poles', SEED_POLES);
+  const [utilisateurs, setUtilisateurs] = useSupabaseCollection('webappft_utilisateurs', SEED_UTILISATEURS);
+
+  const [currentUser, setCurrentUserState] = useState<Utilisateur | null>(null);
+
+  useEffect(() => {
+    const storedId = window.localStorage.getItem(CURRENT_USER_STORAGE_KEY);
+    if (storedId) {
+      const found = utilisateurs.find((u) => String(u.id) === storedId);
+      if (found) setCurrentUserState(found);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [utilisateurs]);
+
+  const setCurrentUser = (user: Utilisateur | null) => {
+    setCurrentUserState(user);
+    if (user) {
+      window.localStorage.setItem(CURRENT_USER_STORAGE_KEY, String(user.id));
+    } else {
+      window.localStorage.removeItem(CURRENT_USER_STORAGE_KEY);
+    }
+  };
 
   return (
     <AppContext.Provider
@@ -103,6 +131,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         gers, setGers,
         ptrs, setPtrs,
         poles, setPoles,
+        utilisateurs, setUtilisateurs,
+        currentUser, setCurrentUser,
       }}
     >
       {children}

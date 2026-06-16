@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { Icon } from '@/components/icon';
 import { AdminList } from '@/components/screens/AdminList';
-import type { Batiment, Entreprise, Identifiant, Marche, Pole } from '@/lib/types';
+import type { Batiment, Entreprise, Identifiant, Marche, Pole, Utilisateur } from '@/lib/types';
 
-type Tab = 'batiment' | 'entreprise' | 'marche' | 'ope' | 'ger' | 'ptr' | 'pole';
+type Tab = 'batiment' | 'entreprise' | 'marche' | 'ope' | 'ger' | 'ptr' | 'pole' | 'utilisateur';
 
 interface AdminScreenProps {
   batiments: Batiment[];
@@ -22,6 +22,8 @@ interface AdminScreenProps {
   setPtrs: React.Dispatch<React.SetStateAction<Identifiant[]>>;
   poles: Pole[];
   setPoles: React.Dispatch<React.SetStateAction<Pole[]>>;
+  utilisateurs: Utilisateur[];
+  setUtilisateurs: React.Dispatch<React.SetStateAction<Utilisateur[]>>;
   onBack: () => void;
 }
 
@@ -33,6 +35,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'ger', label: 'GER' },
   { id: 'ptr', label: 'PTR' },
   { id: 'pole', label: 'Pôles' },
+  { id: 'utilisateur', label: 'Utilisateurs' },
 ];
 
 export function AdminScreen({
@@ -43,6 +46,7 @@ export function AdminScreen({
   gers, setGers,
   ptrs, setPtrs,
   poles, setPoles,
+  utilisateurs, setUtilisateurs,
   onBack,
 }: AdminScreenProps) {
   const [tab, setTab] = useState<Tab>('batiment');
@@ -208,6 +212,27 @@ export function AdminScreen({
                 <div>
                   <div style={{ fontWeight: 600, fontSize: 14 }}>{i.libelle}</div>
                   <div style={{ fontSize: 13, color: 'var(--text-3)' }}>{i.code}</div>
+                </div>
+              )}
+            />
+          )}
+
+          {tab === 'utilisateur' && (
+            <AdminList<Utilisateur>
+              title="Utilisateurs"
+              items={utilisateurs}
+              setItems={setUtilisateurs}
+              columns={[
+                { key: 'nom', label: 'Nom', placeholder: 'Ex: SAID' },
+                { key: 'prenom', label: 'Prénom', placeholder: 'Ex: Ahmed' },
+                { key: 'nomComplet', label: 'Nom complet', placeholder: 'Ex: SAID Ahmed' },
+                { key: 'email', label: 'Email', placeholder: 'prenom.nom@ghu-paris.fr' },
+              ]}
+              newItemTemplate={{ nom: '', prenom: '', nomComplet: '', email: '' }}
+              renderRow={(i) => (
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>{i.nomComplet}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-3)' }}>{i.email}</div>
                 </div>
               )}
             />
